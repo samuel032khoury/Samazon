@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,22 +40,14 @@ public class CategoryController {
 
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-        try {
-            categoryService.deleteCategory(categoryId);
-            return ResponseEntity.ok("Category deleted successfully!");
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
-        }
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok("Category deleted successfully!");
     }
 
     @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<String> updateCategory(@PathVariable Long categoryId,
             @Valid @RequestBody Category category) {
-        try {
-            categoryService.updateCategory(categoryId, category);
-            return ResponseEntity.ok("Category updated successfully!");
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
-        }
+        categoryService.updateCategory(categoryId, category);
+        return ResponseEntity.ok("Category updated successfully!");
     }
 }
