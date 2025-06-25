@@ -1,15 +1,14 @@
 package com.samazon.application.services;
 
-import java.util.List;
-
-import com.samazon.application.models.Category;
+import com.samazon.application.responses.CategoryDTO;
+import com.samazon.application.responses.CategoryResponse;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
+    CategoryResponse getAllCategories(Integer page, Integer size, String sortBy, String sortOrder);
 
-    void createCategory(Category category);
+    CategoryDTO createCategory(CategoryDTO categoryDTO);
 
-    Category deleteCategory(Long categoryId);
+    CategoryDTO deleteCategory(Long categoryId);
 
-    Category updateCategory(Long categoryId, Category category);
+    CategoryDTO updateCategory(Long categoryId, CategoryDTO category);
 }

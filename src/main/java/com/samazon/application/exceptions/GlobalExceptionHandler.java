@@ -2,6 +2,8 @@ package com.samazon.application.exceptions;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.samazon.application.responses.APIResponse;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +24,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return ResponseEntity.status(404).body(ex.getMessage());
+    public ResponseEntity<APIResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        APIResponse apiResponse = new APIResponse(ex.getMessage(), false);
+        return ResponseEntity.status(404).body(apiResponse);
     }
 
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<String> handleAPIException(APIException ex) {
-        return ResponseEntity.status(400).body(ex.getMessage());
+    public ResponseEntity<APIResponse> handleAPIException(APIException ex) {
+        APIResponse apiResponse = new APIResponse(ex.getMessage(), false);
+        return ResponseEntity.status(400).body(apiResponse);
     }
 }
