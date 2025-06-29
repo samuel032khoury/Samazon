@@ -1,4 +1,4 @@
-package com.samazon.application.responses;
+package com.samazon.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

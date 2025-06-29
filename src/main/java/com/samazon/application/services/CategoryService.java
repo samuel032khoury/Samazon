@@ -1,6 +1,6 @@
 package com.samazon.application.services;
 
-import com.samazon.application.responses.CategoryDTO;
+import com.samazon.application.dto.CategoryDTO;
 import com.samazon.application.responses.CategoryResponse;
 
 public interface CategoryService {
