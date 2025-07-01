@@ -1,6 +1,7 @@
 package com.samazon.application.controllers;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,10 @@ public class MediaController {
     private String uploadDir;
 
     @PostMapping("/admin/upload")
-    public ResponseEntity<String> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
-        String response = fileService.uploadMedia(uploadDir, file);
+    public ResponseEntity<?> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
+        String fileName = fileService.uploadMedia(uploadDir, file);
+        Map<String, String> response = Map.of("fileName", fileName);
+        response.put("message", "File uploaded successfully");
         return ResponseEntity.ok(response);
     }
 }

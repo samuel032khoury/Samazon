@@ -1,5 +1,7 @@
 package com.samazon.application.controllers;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.samazon.application.dto.ProductDTO;
 import com.samazon.application.responses.ProductResponse;
@@ -68,6 +71,13 @@ public class ProductController {
         System.out.println("Patch data: " + productDTO.toString());
         ProductDTO patchedProductDTO = productService.patchProduct(productId, productDTO);
         return ResponseEntity.ok(patchedProductDTO);
+    }
+
+    @PutMapping("/admin/product/{productId}/image")
+    public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId,
+            @RequestParam("image") MultipartFile image) throws IOException {
+        ProductDTO updatedProductDTO = productService.updateProductImage(productId, image);
+        return ResponseEntity.ok(updatedProductDTO);
     }
 
     @DeleteMapping("/admin/product/{productId}")
