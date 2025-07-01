@@ -9,13 +9,14 @@ import com.samazon.application.responses.ProductResponse;
 
 public interface ProductService {
 
-    ProductResponse getAllProducts();
+    ProductResponse getAllProducts(Integer page, Integer size, String sortBy, String sortOrder);
 
     ProductDTO addProduct(ProductDTO productDTO, Long categoryId);
 
-    ProductResponse getProductsByCategory(Long categoryId);
+    ProductResponse getProductsByCategory(Long categoryId, Integer page, Integer size, String sortBy, String sortOrder);
 
-    ProductResponse searchProductsByKeyword(String keyword);
+    ProductResponse searchProductsByKeyword(String keyword, Integer page, Integer size, String sortBy,
+            String sortOrder);
 
     ProductDTO updateProduct(Long productId, ProductDTO productDTO);
 

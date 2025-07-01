@@ -5,10 +5,15 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.samazon.application.dto.ProductDTO;
+import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
 import com.samazon.application.models.Product;
@@ -39,22 +44,45 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProducts() {
-        List<Product> products = productRepository.findAll();
-        List<ProductDTO> categoryDTOs = products.stream()
+    public ProductResponse getAllProducts(Integer page, Integer size, String sortBy, String sortOrder) {
+        if (page < 0 || size <= 0) {
+            throw new APIException("Invalid page or size parameters!");
+        }
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(page, size, sortByAndOrder);
+        Page<Product> productPage = productRepository.findAll(pageDetails);
+        List<Product> products = productPage.getContent();
+        if (products.isEmpty()) {
+            throw new APIException("No more products available!");
+        }
+        List<ProductDTO> productDTOs = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
         return ProductResponse.builder()
-                .content(categoryDTOs)
+                .content(productDTOs)
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .lastPage(productPage.isLast())
                 .build();
     }
 
     @Override
     public ProductDTO addProduct(ProductDTO productDTO, Long categoryId) {
-        Product product = modelMapper.map(productDTO, Product.class);
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
-        product.setCategory(category);
+        Product product = category.getProducts().stream()
+                .filter(p -> p.getName().equalsIgnoreCase(productDTO.getName()))
+                .findFirst()
+                .orElse(null);
+        if (product != null) {
+            throw new APIException("Product with name '" + productDTO.getName() + "' already exists in this category");
+        } else {
+            product = modelMapper.map(productDTO, Product.class);
+            product.setCategory(category);
+        }
         if (product.getDiscount() == null)
             product.setDiscount(0.0);
         if (product.getQuantity() == null)
@@ -67,24 +95,57 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProductsByCategory(Long categoryId) {
-        List<Product> products = productRepository.findByCategoryId(categoryId);
+    public ProductResponse getProductsByCategory(Long categoryId, Integer page, Integer size, String sortBy,
+            String sortOrder) {
+        if (page < 0 || size <= 0) {
+            throw new APIException("Invalid page or size parameters!");
+        }
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(page, size, sortByAndOrder);
+        Page<Product> productPage = productRepository.findByCategoryId(categoryId, pageDetails);
+        List<Product> products = productPage.getContent();
+        if (products.isEmpty()) {
+            throw new APIException("No products available for this category!");
+        }
         List<ProductDTO> productDTOs = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
         return ProductResponse.builder()
                 .content(productDTOs)
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .lastPage(productPage.isLast())
                 .build();
     }
 
     @Override
-    public ProductResponse searchProductsByKeyword(String keyword) {
-        List<Product> products = productRepository.findByNameContainingIgnoreCase(keyword);
+    public ProductResponse searchProductsByKeyword(String keyword, Integer page, Integer size, String sortBy,
+            String sortOrder) {
+        if (page < 0 || size <= 0) {
+            throw new APIException("Invalid page or size parameters!");
+        }
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(page, size, sortByAndOrder);
+
+        Page<Product> productPage = productRepository.findByNameContainingIgnoreCase(keyword, pageDetails);
+        List<Product> products = productPage.getContent();
+        if (products.isEmpty()) {
+            throw new APIException("No products found for the keyword: " + keyword);
+        }
         List<ProductDTO> productDTOs = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
         return ProductResponse.builder()
                 .content(productDTOs)
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .lastPage(productPage.isLast())
                 .build();
     }
 
