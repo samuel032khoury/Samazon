@@ -1,4 +1,4 @@
-package com.samazon.application.security.jwt;
+package com.samazon.application.responses;
 
 import java.util.List;
 

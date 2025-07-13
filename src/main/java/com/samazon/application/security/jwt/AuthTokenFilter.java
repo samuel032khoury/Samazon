@@ -17,14 +17,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Component
-@AllArgsConstructor
+@NoArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
-    private final JwtUtils jwtUtils;
-    private final UserDetailsService userDetailsService;
+    private JwtUtils jwtUtils;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
