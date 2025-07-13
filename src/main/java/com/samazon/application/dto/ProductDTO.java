@@ -1,7 +1,7 @@
 package com.samazon.application.dto;
 
-import com.samazon.validation.OnCreateOrUpdate;
-import com.samazon.validation.OnPatch;
+import com.samazon.application.validation.OnCreateOrUpdate;
+import com.samazon.application.validation.OnPatch;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;

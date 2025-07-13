@@ -21,8 +21,8 @@ import com.samazon.application.config.AppConstants;
 import com.samazon.application.dto.ProductDTO;
 import com.samazon.application.responses.ProductResponse;
 import com.samazon.application.services.ProductService;
-import com.samazon.validation.OnCreateOrUpdate;
-import com.samazon.validation.OnPatch;
+import com.samazon.application.validation.OnCreateOrUpdate;
+import com.samazon.application.validation.OnPatch;
 
 import lombok.AllArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.samazon.utils;
+package com.samazon.application.utils;
 
 import java.lang.reflect.Field;
 

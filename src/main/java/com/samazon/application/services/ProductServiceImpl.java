@@ -20,7 +20,7 @@ import com.samazon.application.models.Product;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
 import com.samazon.application.responses.ProductResponse;
-import com.samazon.utils.PatchUtil;
+import com.samazon.application.utils.PatchUtil;
 
 import lombok.RequiredArgsConstructor;
 
