@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.samazon.application.models.User;
-import com.samazon.application.models.UserDetailsImpl;
 import com.samazon.application.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;

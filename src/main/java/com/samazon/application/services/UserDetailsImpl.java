@@ -1,4 +1,4 @@
-package com.samazon.application.models;
+package com.samazon.application.services;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.samazon.application.models.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

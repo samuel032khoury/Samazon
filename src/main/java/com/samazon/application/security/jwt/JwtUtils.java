@@ -34,7 +34,7 @@ public class JwtUtils {
 
     public String getRequestJWT(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-        logger.debug("Authorization header: {}", headerAuth);
+        logger.info("Authorization header: {}", headerAuth);
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
         }
