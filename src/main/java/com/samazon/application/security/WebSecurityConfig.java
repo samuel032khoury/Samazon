@@ -53,14 +53,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
-                                .requestMatchers("/v3/api-docs/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/api/public/**").permitAll()
-                                .requestMatchers("/api/test/**").permitAll()
-                                .requestMatchers("/media/**").permitAll() // TODO: verify if path is media or images
-                                .requestMatchers("api/admin/**").permitAll() // TODO: Update to restrict access
+                        req -> req.requestMatchers(SecurityEndpointsConfig.PUBLIC_ENDPOINTS).permitAll()
                                 .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
@@ -72,7 +65,6 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/v2/api-docs/**", "/configuration/ui/**",
-                "/swagger-resources/**", "/configuration/security/**", "/swagger-ui.html", "/webjars/**");
+        return (web) -> web.ignoring().requestMatchers(SecurityEndpointsConfig.SWAGGER_ENDPOINTS);
     }
 }

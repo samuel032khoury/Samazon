@@ -16,7 +16,7 @@ import com.samazon.application.services.FileService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/media")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class MediaController {
     private final FileService fileService;
@@ -24,11 +24,12 @@ public class MediaController {
     @Value("${project.media.upload.dir}")
     private String uploadDir;
 
-    @PostMapping("/admin/upload")
+    @PostMapping("/admin/media")
     public ResponseEntity<?> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
         String fileName = fileService.uploadMedia(uploadDir, file);
-        Map<String, String> response = Map.of("fileName", fileName);
-        response.put("message", "File uploaded successfully");
+        Map<String, String> response = Map.of(
+                "fileName", fileName,
+                "message", "File uploaded successfully");
         return ResponseEntity.ok(response);
     }
 }
