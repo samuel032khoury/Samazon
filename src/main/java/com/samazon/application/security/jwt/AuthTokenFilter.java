@@ -35,7 +35,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         logger.info("Authentication filter invoked for request: {}", request.getRequestURI());
         try {
-            String jwt = jwtUtils.getRequestJWT(request);
+            String jwt = jwtUtils.getCookieJWT(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
