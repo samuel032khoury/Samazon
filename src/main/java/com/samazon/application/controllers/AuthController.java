@@ -1,9 +1,7 @@
 package com.samazon.application.controllers;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,15 +21,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samazon.application.dto.LoginRequestDTO;
-import com.samazon.application.dto.SingUpRequestDTO;
+import com.samazon.application.dto.UserInfoDTO;
+import com.samazon.application.dto.requests.LoginRequestDTO;
+import com.samazon.application.dto.requests.SingUpRequestDTO;
 import com.samazon.application.models.Role;
 import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
-import com.samazon.application.responses.MessageResponse;
-import com.samazon.application.responses.UserInfoResponse;
+import com.samazon.application.responses.APIResponse;
 import com.samazon.application.security.jwt.JwtUtils;
 import com.samazon.application.services.UserDetailsImpl;
 
@@ -62,22 +60,20 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles));
+                    .body(new UserInfoDTO(userDetails.getId(), userDetails.getUsername(), roles));
         } catch (AuthenticationException e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Invalid username or password");
-            errorResponse.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(errorResponse);
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                    .body(new APIResponse("Invalid username or password", false));
         }
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SingUpRequestDTO signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            return ResponseEntity.badRequest().body(new APIResponse("Error: Username is already taken!", false));
         }
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            return ResponseEntity.badRequest().body(new APIResponse("Error: Email is already in use!", false));
         }
 
         User user = new User();
@@ -114,14 +110,14 @@ public class AuthController {
         }
         user.setRoles(roles);
         userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(new APIResponse("User registered successfully!", true));
     }
 
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new MessageResponse("You've been signed out!"));
+                .body(new APIResponse("You've been signed out!", true));
     }
 
     @GetMapping("/username")
