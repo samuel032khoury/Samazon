@@ -1,5 +1,7 @@
 package com.samazon.application.services;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDTO addProductToCart(Long productId, Integer quantity) {
         // Find existing cart or create a new one
-        Cart cart = getCurrentUserCart();
+        Cart cart = _getCurrentUserCart();
 
         // Retrieve Product Details
         Product product = productRepository.findById(productId)
@@ -79,7 +81,7 @@ public class CartServiceImpl implements CartService {
         return cartDTO;
     }
 
-    private Cart getCurrentUserCart() {
+    private Cart _getCurrentUserCart() {
         Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId());
         if (userCart == null) {
             userCart = new Cart();
@@ -89,4 +91,17 @@ public class CartServiceImpl implements CartService {
         return userCart;
     }
 
+    @Override
+    public List<CartDTO> getAllCarts() {
+        List<Cart> carts = cartRepository.findAll();
+        return carts.stream()
+                .map(this::mapCartToDTO)
+                .toList();
+    }
+
+    @Override
+    public CartDTO getCurrentUserCart() {
+        Cart userCart = _getCurrentUserCart();
+        return mapCartToDTO(userCart);
+    }
 }
