@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.samazon.application.dto.CartDTO;
+import com.samazon.application.dto.CartItemDTO;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
@@ -67,7 +68,15 @@ public class CartServiceImpl implements CartService {
         cart.getCartItems().add(savedCartItem);
         cartRepository.save(cart);
 
-        return modelMapper.map(cart, CartDTO.class);
+        return mapCartToDTO(cart);
+    }
+
+    private CartDTO mapCartToDTO(Cart cart) {
+        CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+        cartDTO.setItems(cart.getCartItems().stream()
+                .map(cartItem -> modelMapper.map(cartItem, CartItemDTO.class))
+                .toList());
+        return cartDTO;
     }
 
     private Cart getCurrentUserCart() {
