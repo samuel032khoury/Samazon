@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.config.AppConstants;
 import com.samazon.application.dto.CategoryDTO;
-import com.samazon.application.responses.CategoryResponse;
+import com.samazon.application.dto.responses.CategoryResponse;
 import com.samazon.application.services.CategoryService;
 
 import jakarta.validation.Valid;

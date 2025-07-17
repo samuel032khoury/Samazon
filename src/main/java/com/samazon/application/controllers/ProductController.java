@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.samazon.application.config.AppConstants;
 import com.samazon.application.dto.ProductDTO;
-import com.samazon.application.responses.ProductResponse;
+import com.samazon.application.dto.responses.ProductResponse;
 import com.samazon.application.services.ProductService;
 import com.samazon.application.validation.OnCreateOrUpdate;
 import com.samazon.application.validation.OnPatch;

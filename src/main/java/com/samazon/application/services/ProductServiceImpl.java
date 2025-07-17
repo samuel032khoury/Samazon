@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.samazon.application.dto.ProductDTO;
+import com.samazon.application.dto.responses.ProductResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
 import com.samazon.application.models.Product;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
-import com.samazon.application.responses.ProductResponse;
 import com.samazon.application.utils.PatchUtil;
 
 import lombok.RequiredArgsConstructor;

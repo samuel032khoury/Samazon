@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.UserInfoDTO;
 import com.samazon.application.dto.requests.LoginRequestDTO;
-import com.samazon.application.dto.requests.SingUpRequestDTO;
+import com.samazon.application.dto.requests.SignUpRequestDTO;
+import com.samazon.application.dto.responses.APIResponse;
 import com.samazon.application.models.Role;
 import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
-import com.samazon.application.responses.APIResponse;
 import com.samazon.application.security.jwt.JwtUtils;
 import com.samazon.application.services.UserDetailsImpl;
 
@@ -68,7 +68,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SingUpRequestDTO signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDTO signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new APIResponse("Error: Username is already taken!", false));
         }

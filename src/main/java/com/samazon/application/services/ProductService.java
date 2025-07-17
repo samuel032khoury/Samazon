@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.samazon.application.dto.ProductDTO;
-import com.samazon.application.responses.ProductResponse;
+import com.samazon.application.dto.responses.ProductResponse;
 
 public interface ProductService {
 

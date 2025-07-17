@@ -2,7 +2,7 @@ package com.samazon.application.exceptions;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.samazon.application.responses.APIResponse;
+import com.samazon.application.dto.responses.APIResponse;
 
 import java.util.HashMap;
 import java.util.Map;

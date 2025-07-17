@@ -10,11 +10,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.samazon.application.dto.CategoryDTO;
+import com.samazon.application.dto.responses.CategoryResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
 import com.samazon.application.repositories.CategoryRepository;
-import com.samazon.application.responses.CategoryResponse;
 
 import lombok.AllArgsConstructor;
 

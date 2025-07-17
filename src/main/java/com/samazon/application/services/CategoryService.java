@@ -1,7 +1,7 @@
 package com.samazon.application.services;
 
 import com.samazon.application.dto.CategoryDTO;
-import com.samazon.application.responses.CategoryResponse;
+import com.samazon.application.dto.responses.CategoryResponse;
 
 public interface CategoryService {
     CategoryResponse getAllCategories(Integer page, Integer size, String sortBy, String sortOrder);
