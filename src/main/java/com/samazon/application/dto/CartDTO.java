@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class CartDTO {
     private Long id;
     private Double totalPrice = 0.0;
-    private List<ProductDTO> products = new ArrayList<>();
+    private List<CartItemDTO> products = new ArrayList<>();
 }
