@@ -23,8 +23,4 @@ public class Role {
     @ToString.Exclude
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
-
-    public Role(RoleType roleType) {
-        this.roleType = roleType;
-    }
 }

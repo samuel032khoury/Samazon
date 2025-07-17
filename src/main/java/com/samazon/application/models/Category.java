@@ -1,5 +1,6 @@
 package com.samazon.application.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -27,5 +28,5 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 }
