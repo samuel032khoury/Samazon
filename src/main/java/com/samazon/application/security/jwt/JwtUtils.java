@@ -74,8 +74,8 @@ public class JwtUtils {
         String jwt = generateJwtTokenForUser(userDetails);
         logger.info("Generated JWT: {}", jwt);
         return ResponseCookie.from(cookieName, jwt)
-                .httpOnly(false) // TODO: Set to true for production
-                // .secure(true) // TODO: Set to true for production
+                .httpOnly(true)
+                .secure(true)
                 .path("/api")
                 .maxAge(jwtExpirationMs / 1000)
                 .build();
@@ -104,6 +104,12 @@ public class JwtUtils {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from(cookieName, "")
+                .path("/api")
+                .build();
     }
 
 }
