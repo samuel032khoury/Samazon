@@ -12,7 +12,7 @@ import com.samazon.application.models.Product;
 import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.ProductRepository;
-import com.samazon.application.utils.AuthUtils;
+import com.samazon.application.utils.AuthUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -23,6 +23,9 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+
+    private final AuthUtil authUtil;
+
     private final ModelMapper modelMapper;
 
     @Override
@@ -68,10 +71,10 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart getCurrentUserCart() {
-        Cart userCart = cartRepository.findByUserId(AuthUtils.getCurrentUser().getId());
+        Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId());
         if (userCart == null) {
             userCart = new Cart();
-            userCart.setUser(AuthUtils.getCurrentUser());
+            userCart.setUser(authUtil.getCurrentUser());
             cartRepository.save(userCart);
         }
         return userCart;
