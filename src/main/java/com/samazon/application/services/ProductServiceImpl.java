@@ -85,8 +85,8 @@ public class ProductServiceImpl implements ProductService {
         }
         if (product.getDiscount() == null)
             product.setDiscount(0.0);
-        if (product.getQuantity() == null)
-            product.setQuantity(0);
+        if (product.getStock() == null)
+            product.setStock(0);
         if (product.getImage() == null || product.getImage().isEmpty())
             product.setImage("default-product-image.png");
         product.setSpecialPrice(calculateSpecialPrice(product));
@@ -157,8 +157,8 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setId(productId);
         if (existingProduct.getDiscount() == null)
             existingProduct.setDiscount(0.0);
-        if (existingProduct.getQuantity() == null)
-            existingProduct.setQuantity(0);
+        if (existingProduct.getStock() == null)
+            existingProduct.setStock(0);
         if (existingProduct.getImage() == null || existingProduct.getImage().isEmpty())
             existingProduct.setImage("default-product-image.png");
         existingProduct.setSpecialPrice(calculateSpecialPrice(existingProduct));

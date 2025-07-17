@@ -27,7 +27,7 @@ public class ProductDTO {
     private String image;
 
     @PositiveOrZero(groups = { OnCreateOrUpdate.class, OnPatch.class })
-    private Integer quantity;
+    private Integer stock;
 
     @NotNull(groups = OnCreateOrUpdate.class)
     @PositiveOrZero(groups = { OnCreateOrUpdate.class, OnPatch.class })
