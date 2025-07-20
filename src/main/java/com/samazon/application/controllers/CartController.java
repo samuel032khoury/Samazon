@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.CartDTO;
 import com.samazon.application.dto.requests.AddCartItemRequestDTO;
+import com.samazon.application.dto.requests.UpdateCartItemRequestDTO;
 import com.samazon.application.services.CartService;
 
 import jakarta.validation.Valid;
@@ -34,9 +36,16 @@ public class CartController {
         return ResponseEntity.ok(cartDTOs);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/user-cart")
     public ResponseEntity<CartDTO> getCurrentUserCart() {
         CartDTO cartDTO = cartService.getCurrentUserCart();
+        return ResponseEntity.ok(cartDTO);
+    }
+
+    @PatchMapping("/user-cart")
+    public ResponseEntity<CartDTO> updateCartItem(@Valid @RequestBody UpdateCartItemRequestDTO cartItemDTO) {
+        CartDTO cartDTO = cartService.updateCartItem(cartItemDTO.getProductId(), cartItemDTO.getQuantity(),
+                cartItemDTO.getAction());
         return ResponseEntity.ok(cartDTO);
     }
 }

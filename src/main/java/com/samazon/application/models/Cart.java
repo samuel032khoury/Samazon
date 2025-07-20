@@ -36,4 +36,8 @@ public class Cart {
     private List<CartItem> cartItems = new ArrayList<>();
 
     private Double totalPrice = 0.0;
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = Math.round(totalPrice * 100.0) / 100.0;
+    }
 }
