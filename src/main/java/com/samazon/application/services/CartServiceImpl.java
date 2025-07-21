@@ -104,6 +104,22 @@ public class CartServiceImpl implements CartService {
         return mapCartToDTO(updatedCart);
     }
 
+    @Override
+    @Transactional
+    public void removeCartItem(Long productId) {
+        Long userId = authUtil.getCurrentUser().getId();
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));
+        CartItem cartItem = cartItemRepository
+                .findByProductIdAndCartUserId(productId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId and userId",
+                        productId + " and " + userId));
+
+        removeCartItem(cart, cartItem);
+        updateProductStock(cartItem.getProduct());
+        updateCartTotal(cart);
+    }
+
     private int calculateNewQUantity(Integer currentQuantity, Integer requestedQuantity, String action) {
         return switch (action) {
             case "increment" -> currentQuantity + requestedQuantity;
