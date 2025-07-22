@@ -9,6 +9,8 @@ import com.samazon.application.dto.responses.ProductResponse;
 
 public interface ProductService {
 
+    ProductDTO getProductById(Long productId);
+
     ProductResponse getAllProducts(Integer page, Integer size, String sortBy, String sortOrder);
 
     ProductDTO addProduct(ProductDTO productDTO, Long categoryId);

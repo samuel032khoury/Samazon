@@ -44,6 +44,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDTO getProductById(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        return modelMapper.map(product, ProductDTO.class);
+    }
+
+    @Override
     public ProductResponse getAllProducts(Integer page, Integer size, String sortBy, String sortOrder) {
         if (page < 0 || size <= 0) {
             throw new APIException("Invalid page or size parameters!");
@@ -151,6 +158,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
+        // TODO: update cart total
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         modelMapper.map(productDTO, existingProduct);
@@ -193,6 +201,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO deleteProduct(Long productId) {
+        // TODO: update cart total
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         productRepository.deleteById(productId);

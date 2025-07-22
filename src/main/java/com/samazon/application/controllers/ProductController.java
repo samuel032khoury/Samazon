@@ -42,6 +42,12 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/public/product/{productId}")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) {
+        ProductDTO productDTO = productService.getProductById(productId);
+        return ResponseEntity.ok(productDTO);
+    }
+
     @PostMapping("/admin/categories/{categoryId}/product")
     public ResponseEntity<ProductDTO> addProduct(@RequestBody @Validated(OnCreateOrUpdate.class) ProductDTO productDTO,
             @PathVariable Long categoryId) {
