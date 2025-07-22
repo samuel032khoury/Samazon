@@ -35,5 +35,5 @@ public class CartItem {
 
     private Integer quantity;
     private Double discount;
-    private Double price;
+    private Double priceAtAddToCart; // display as the original price when added to cart
 }

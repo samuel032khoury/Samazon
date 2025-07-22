@@ -22,6 +22,7 @@ import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
 import com.samazon.application.utils.PatchUtil;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final CartService cartService;
     private final ModelMapper modelMapper;
     private final FileService fileService;
 
@@ -157,8 +159,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-        // TODO: update cart total
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         modelMapper.map(productDTO, existingProduct);
@@ -171,10 +173,12 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setImage("default-product-image.png");
         existingProduct.setSpecialPrice(calculateSpecialPrice(existingProduct));
         Product updatedProduct = productRepository.save(existingProduct);
+        cartService.updateAllCartsWithProduct(productId);
         return modelMapper.map(updatedProduct, ProductDTO.class);
     }
 
     @Override
+    @Transactional
     public ProductDTO patchProduct(Long productId, ProductDTO productDTO) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
@@ -184,6 +188,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setSpecialPrice(calculateSpecialPrice(existingProduct));
 
         Product updatedProduct = productRepository.save(existingProduct);
+        cartService.updateAllCartsWithProduct(productId);
         return modelMapper.map(updatedProduct, ProductDTO.class);
     }
 
@@ -200,8 +205,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDTO deleteProduct(Long productId) {
-        // TODO: update cart total
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         productRepository.deleteById(productId);

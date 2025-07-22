@@ -16,6 +16,7 @@ import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
 import com.samazon.application.repositories.CategoryRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -63,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));

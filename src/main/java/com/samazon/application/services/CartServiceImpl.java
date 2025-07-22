@@ -55,7 +55,7 @@ public class CartServiceImpl implements CartService {
                 .product(product)
                 .quantity(quantity)
                 .discount(product.getDiscount())
-                .price(product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
+                .priceAtAddToCart(product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
                 .build();
         cartItemRepository.save(cartItem);
 
@@ -120,6 +120,11 @@ public class CartServiceImpl implements CartService {
         updateCartTotal(cart);
     }
 
+    @Override
+    public void updateAllCartsWithProduct(Long productId) {
+        cartRepository.findByCartItemsProductId(productId).forEach(this::updateCartTotal);
+    }
+
     private int calculateNewQUantity(Integer currentQuantity, Integer requestedQuantity, String action) {
         return switch (action) {
             case "increment" -> currentQuantity + requestedQuantity;
@@ -153,7 +158,8 @@ public class CartServiceImpl implements CartService {
 
     private Cart updateCartTotal(Cart cart) {
         double totalPrice = cart.getCartItems().stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .mapToDouble(item -> (item.getProduct().getSpecialPrice() != null ? item.getProduct().getSpecialPrice()
+                        : item.getProduct().getPrice()) * item.getQuantity())
                 .sum();
         cart.setTotalPrice(totalPrice);
         return cartRepository.save(cart);
