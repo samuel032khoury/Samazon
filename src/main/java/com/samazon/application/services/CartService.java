@@ -15,5 +15,9 @@ public interface CartService {
 
     public void removeCartItem(Long productId);
 
-    public void updateAllCartsWithProduct(Long productId);
+    public List<Long> getAllCartIdsWithProduct(Long productId);
+
+    public List<Long> getAllCartIdsWithCategory(Long categoryId);
+
+    public void recalculateCartTotal(Long cartId);
 }

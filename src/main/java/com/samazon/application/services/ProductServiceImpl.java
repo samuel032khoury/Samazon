@@ -173,7 +173,8 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setImage("default-product-image.png");
         existingProduct.setSpecialPrice(calculateSpecialPrice(existingProduct));
         Product updatedProduct = productRepository.save(existingProduct);
-        cartService.updateAllCartsWithProduct(productId);
+        // cartService.updateAllCartsWithProduct(productId);
+        cartService.getAllCartIdsWithProduct(productId).forEach(cartId -> cartService.recalculateCartTotal(cartId));
         return modelMapper.map(updatedProduct, ProductDTO.class);
     }
 
@@ -188,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setSpecialPrice(calculateSpecialPrice(existingProduct));
 
         Product updatedProduct = productRepository.save(existingProduct);
-        cartService.updateAllCartsWithProduct(productId);
+        cartService.getAllCartIdsWithProduct(productId).forEach(cartId -> cartService.recalculateCartTotal(cartId));
         return modelMapper.map(updatedProduct, ProductDTO.class);
     }
 
@@ -209,7 +210,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        List<Long> cartIds = cartService.getAllCartIdsWithProduct(productId);
         productRepository.deleteById(productId);
+        cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
         return modelMapper.map(product, ProductDTO.class);
     }
 

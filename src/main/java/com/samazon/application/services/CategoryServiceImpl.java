@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+    private final CartService cartService;
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
@@ -68,7 +69,9 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+        List<Long> cartIds = cartService.getAllCartIdsWithCategory(categoryId);
         categoryRepository.deleteById(categoryId);
+        cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
         return modelMapper.map(category, CategoryDTO.class);
     }
 

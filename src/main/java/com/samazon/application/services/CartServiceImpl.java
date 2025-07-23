@@ -91,7 +91,7 @@ public class CartServiceImpl implements CartService {
                 .findByProductIdAndCartUserId(productId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId and userId",
                         productId + " and " + userId));
-        int newQuantity = calculateNewQUantity(cartItem.getQuantity(), quantity, action);
+        int newQuantity = calculateNewQuantity(cartItem.getQuantity(), quantity, action);
         validateStockAvailability(product, newQuantity, action);
         if (newQuantity <= 0) {
             removeCartItem(cart, cartItem);
@@ -121,11 +121,23 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void updateAllCartsWithProduct(Long productId) {
-        cartRepository.findByCartItemsProductId(productId).forEach(this::updateCartTotal);
+    public List<Long> getAllCartIdsWithProduct(Long productId) {
+        return cartRepository.findByCartItemsProductId(productId)
+                .stream().map(Cart::getId).toList();
     }
 
-    private int calculateNewQUantity(Integer currentQuantity, Integer requestedQuantity, String action) {
+    @Override
+    public List<Long> getAllCartIdsWithCategory(Long categoryId) {
+        return cartRepository.findByCartItemsProductCategoryId(categoryId)
+                .stream().map(Cart::getId).toList();
+    }
+
+    @Override
+    public void recalculateCartTotal(Long cartId) {
+        cartRepository.findById(cartId).ifPresent(this::updateCartTotal);
+    }
+
+    private int calculateNewQuantity(Integer currentQuantity, Integer requestedQuantity, String action) {
         return switch (action) {
             case "increment" -> currentQuantity + requestedQuantity;
             case "decrement" -> currentQuantity - requestedQuantity;
@@ -157,6 +169,7 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart updateCartTotal(Cart cart) {
+        cartItemRepository.flush();
         double totalPrice = cart.getCartItems().stream()
                 .mapToDouble(item -> (item.getProduct().getSpecialPrice() != null ? item.getProduct().getSpecialPrice()
                         : item.getProduct().getPrice()) * item.getQuantity())
