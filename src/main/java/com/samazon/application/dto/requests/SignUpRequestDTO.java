@@ -4,6 +4,7 @@ import java.util.Set;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -22,5 +23,6 @@ public class SignUpRequestDTO {
     @Size(min = 6, max = 40)
     private String password;
 
+    @NotNull
     private Set<String> roles;
 }
