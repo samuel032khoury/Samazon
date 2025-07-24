@@ -86,8 +86,6 @@ public class ProductController {
     @PatchMapping("/admin/product/{productId}")
     public ResponseEntity<ProductDTO> patchProduct(@PathVariable Long productId,
             @RequestBody @Validated(OnPatch.class) ProductDTO productDTO) {
-        System.out.println("Patching product with ID: " + productId);
-        System.out.println("Patch data: " + productDTO.toString());
         ProductDTO patchedProductDTO = productService.patchProduct(productId, productDTO);
         return ResponseEntity.ok(patchedProductDTO);
     }

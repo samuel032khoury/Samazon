@@ -49,7 +49,6 @@ public class CartServiceImpl implements CartService {
         validateStockAvailability(product, quantity, "set");
 
         // Create CartItem and save it
-
         CartItem cartItem = CartItem.builder()
                 .cart(cart)
                 .product(product)
@@ -58,6 +57,8 @@ public class CartServiceImpl implements CartService {
                 .priceAtAddToCart(product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
                 .build();
         cartItemRepository.save(cartItem);
+
+        cart.getCartItems().add(cartItem);
 
         updateProductStock(product);
         Cart updatedCart = updateCartTotal(cart);
@@ -180,12 +181,9 @@ public class CartServiceImpl implements CartService {
 
     private Cart _getCurrentUserCart() {
         Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
-                .orElse(null);
-        if (userCart == null) {
-            userCart = new Cart();
-            userCart.setUser(authUtil.getCurrentUser());
-            cartRepository.save(userCart);
-        }
+                .orElse(new Cart());
+        userCart.setUser(authUtil.getCurrentUser());
+        userCart = cartRepository.save(userCart);
         return userCart;
     }
 
