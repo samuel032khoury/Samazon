@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class AddressDTO {
     private Long id;
     @NotBlank
-    @Size(min = 5, message = "Street must be at least 5 characters long")
-    private String street;
-    @NotBlank
     @Size(min = 5, message = "Building must be at least 5 characters long")
     private String building;
+    @NotBlank
+    @Size(min = 5, message = "Street must be at least 5 characters long")
+    private String street;
     @NotBlank
     @Size(min = 4, message = "City must be at least 4 characters long")
     private String city;
