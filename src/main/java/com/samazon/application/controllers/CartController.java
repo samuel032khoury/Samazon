@@ -21,37 +21,37 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/carts")
+@RequestMapping("/api")
 @AllArgsConstructor
 public class CartController {
     private final CartService cartService;
 
-    @PostMapping("/add")
-    public ResponseEntity<CartDTO> addToCart(@Valid @RequestBody AddCartItemRequestDTO cartItemDTO) {
-        CartDTO cartDTO = cartService.addProductToCart(cartItemDTO.getProductId(), cartItemDTO.getQuantity());
-        return ResponseEntity.ok(cartDTO);
-    }
-
-    @GetMapping("/all")
+    @GetMapping("/admin/all-carts")
     public ResponseEntity<List<CartDTO>> getAllCarts() {
         List<CartDTO> cartDTOs = cartService.getAllCarts();
         return ResponseEntity.ok(cartDTOs);
     }
 
-    @GetMapping("/user-cart")
+    @PostMapping("/cart")
+    public ResponseEntity<CartDTO> addToCart(@Valid @RequestBody AddCartItemRequestDTO cartItemDTO) {
+        CartDTO cartDTO = cartService.addProductToCart(cartItemDTO.getProductId(), cartItemDTO.getQuantity());
+        return ResponseEntity.ok(cartDTO);
+    }
+
+    @GetMapping("/cart")
     public ResponseEntity<CartDTO> getCurrentUserCart() {
         CartDTO cartDTO = cartService.getCurrentUserCart();
         return ResponseEntity.ok(cartDTO);
     }
 
-    @PatchMapping("/user-cart")
+    @PatchMapping("/cart")
     public ResponseEntity<CartDTO> updateCartItem(@Valid @RequestBody UpdateCartItemRequestDTO cartItemDTO) {
         CartDTO cartDTO = cartService.updateCartItem(cartItemDTO.getProductId(), cartItemDTO.getQuantity(),
                 cartItemDTO.getAction());
         return ResponseEntity.ok(cartDTO);
     }
 
-    @DeleteMapping("/user-cart")
+    @DeleteMapping("/cart")
     public ResponseEntity<Void> removeCartItem(@RequestParam Long productId) {
         cartService.removeCartItem(productId);
         return ResponseEntity.noContent().build();
