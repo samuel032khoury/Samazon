@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 public class CartController {
     private final CartService cartService;
 
-    @GetMapping("/admin/all-carts")
+    @GetMapping("/admin/carts/all")
     public ResponseEntity<List<CartDTO>> getAllCarts() {
         List<CartDTO> cartDTOs = cartService.getAllCarts();
         return ResponseEntity.ok(cartDTOs);
