@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.samazon.application.dto.AddressDTO;
+import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.AccessDeniedException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Address;
@@ -30,6 +31,12 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDTO createAddress(AddressDTO addressDTO, User user) {
+        boolean exists = addressRepository.existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCode(
+                user.getId(), addressDTO.getBuilding(), addressDTO.getStreet(), addressDTO.getCity(),
+                addressDTO.getState(), addressDTO.getCountry(), addressDTO.getZipCode());
+        if (exists) {
+            throw new APIException("Address already exists for this user with the same details");
+        }
         Address address = modelMapper.map(addressDTO, Address.class);
         List<Address> addressList = user.getAddresses();
         addressList.add(address);
