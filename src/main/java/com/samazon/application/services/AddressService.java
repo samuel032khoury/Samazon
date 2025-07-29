@@ -15,4 +15,6 @@ public interface AddressService {
 
     AddressDTO getAddressById(Long addressId);
 
+    void deleteAddress(Long addressId, User user);
+
 }

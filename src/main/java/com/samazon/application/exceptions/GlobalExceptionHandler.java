@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(apiResponse);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<APIResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        APIResponse apiResponse = new APIResponse(ex.getMessage(), false);
+        return ResponseEntity.status(403).body(apiResponse);
+    }
+
     @ExceptionHandler(APIException.class)
     public ResponseEntity<APIResponse> handleAPIException(APIException ex) {
         APIResponse apiResponse = new APIResponse(ex.getMessage(), false);

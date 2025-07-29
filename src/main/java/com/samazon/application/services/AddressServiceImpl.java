@@ -6,6 +6,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.samazon.application.dto.AddressDTO;
+import com.samazon.application.exceptions.AccessDeniedException;
+import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Address;
 import com.samazon.application.models.User;
 import com.samazon.application.repositories.AddressRepository;
@@ -50,5 +52,15 @@ public class AddressServiceImpl implements AddressService {
         return addresses.stream()
                 .map(address -> modelMapper.map(address, AddressDTO.class))
                 .toList();
+    }
+
+    @Override
+    public void deleteAddress(Long addressId, User user) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
+        if (!address.getUser().equals(user)) {
+            throw new AccessDeniedException("You do not have permission to delete this address");
+        }
+        addressRepository.delete(address);
     }
 }
