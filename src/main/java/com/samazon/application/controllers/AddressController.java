@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +41,8 @@ public class AddressController {
     }
 
     @PostMapping("/addresses")
-    public ResponseEntity<AddressDTO> createAddress(@Valid @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<AddressDTO> createAddress(
+            @Valid @RequestBody AddressDTO addressDTO) {
         User user = authUtil.getCurrentUser();
         AddressDTO savedAddressDTO = addressService.createAddress(addressDTO, user);
         return new ResponseEntity<>(savedAddressDTO, HttpStatus.CREATED);
@@ -58,5 +60,13 @@ public class AddressController {
         User user = authUtil.getCurrentUser();
         addressService.deleteAddress(addressId, user);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/addresses/{addressId}")
+    public ResponseEntity<AddressDTO> updateAddress(@PathVariable Long addressId,
+            @Valid @RequestBody AddressDTO addressDTO) {
+        User user = authUtil.getCurrentUser();
+        AddressDTO updatedAddressDTO = addressService.updateAddress(addressId, addressDTO, user);
+        return new ResponseEntity<>(updatedAddressDTO, HttpStatus.OK);
     }
 }

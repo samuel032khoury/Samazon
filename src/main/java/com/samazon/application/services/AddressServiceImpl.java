@@ -63,4 +63,17 @@ public class AddressServiceImpl implements AddressService {
         }
         addressRepository.delete(address);
     }
+
+    @Override
+    public AddressDTO updateAddress(Long addressId, AddressDTO addressDTO, User user) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
+        if (!address.getUser().equals(user)) {
+            throw new AccessDeniedException("You do not have permission to update this address");
+        }
+        modelMapper.map(addressDTO, address);
+        address.setId(addressId);
+        Address updatedAddress = addressRepository.save(address);
+        return modelMapper.map(updatedAddress, AddressDTO.class);
+    }
 }
