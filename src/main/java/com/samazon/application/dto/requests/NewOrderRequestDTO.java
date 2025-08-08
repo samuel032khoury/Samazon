@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddOrderRequestDTO {
+public class NewOrderRequestDTO {
     private Long addressId;
     private String paymentMethod;
     private String paymentGatewayProvider;
