@@ -50,10 +50,10 @@ public class AuthController {
     private final RoleRepository roleRepository;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDTO request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             ResponseCookie jwtCookie = jwtUtils.generateJwtCookieForUser(userDetails);
@@ -69,18 +69,18 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDTO signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDTO request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest().body(new APIResponse("Error: Username is already taken!", false));
         }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body(new APIResponse("Error: Email is already in use!", false));
         }
 
         User user = new User();
-        user.setUsername(signUpRequest.getUsername());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(encoder.encode(request.getPassword()));
 
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByRoleType(RoleType.ROLE_USER)
