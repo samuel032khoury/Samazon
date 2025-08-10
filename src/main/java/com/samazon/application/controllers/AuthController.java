@@ -25,6 +25,7 @@ import com.samazon.application.dto.UserInfoDTO;
 import com.samazon.application.dto.requests.LoginRequestDTO;
 import com.samazon.application.dto.requests.SignUpRequestDTO;
 import com.samazon.application.dto.responses.APIResponse;
+import com.samazon.application.exceptions.APIException;
 import com.samazon.application.models.Role;
 import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
@@ -86,24 +87,24 @@ public class AuthController {
 
         if (strRoles == null || strRoles.isEmpty()) {
             Role userRole = roleRepository.findByRoleType(RoleType.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                    .orElseThrow(() -> new APIException("Error: Role not found."));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
                         Role adminRole = roleRepository.findByRoleType(RoleType.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                                .orElseThrow(() -> new APIException("Error: Role not found."));
                         roles.add(adminRole);
                         break;
                     case "seller":
                         Role sellerRole = roleRepository.findByRoleType(RoleType.ROLE_SELLER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                                .orElseThrow(() -> new APIException("Error: Role not found."));
                         roles.add(sellerRole);
                         break;
                     default:
                         Role userRole = roleRepository.findByRoleType(RoleType.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                                .orElseThrow(() -> new APIException("Error: Role not found."));
                         roles.add(userRole);
                 }
             });

@@ -49,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDTO getAddressById(Long addressId) {
         Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         return modelMapper.map(address, AddressDTO.class);
     }
 
