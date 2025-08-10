@@ -7,5 +7,4 @@ import com.samazon.application.models.OrderItem;
 
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
-    // Custom query methods can be defined here if needed
 }
