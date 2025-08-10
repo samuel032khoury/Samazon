@@ -11,7 +11,7 @@ public interface CartService {
 
     public CartDTO getCurrentUserCart();
 
-    public CartDTO updateCartItem(Long productId, Integer quantity, String action);
+    public CartDTO updateCartItemQuantity(Long productId, Integer quantity, String action);
 
     public void removeCartItem(Long productId);
 

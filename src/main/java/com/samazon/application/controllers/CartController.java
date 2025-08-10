@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.CartDTO;
 import com.samazon.application.dto.requests.AddCartItemRequestDTO;
-import com.samazon.application.dto.requests.UpdateCartItemRequestDTO;
+import com.samazon.application.dto.requests.UpdateCartItemQuantityRequestDTO;
 import com.samazon.application.services.CartService;
 
 import jakarta.validation.Valid;
@@ -33,8 +33,9 @@ public class CartController {
     }
 
     @PostMapping("/cart")
-    public ResponseEntity<CartDTO> addToCart(@Valid @RequestBody AddCartItemRequestDTO cartItemDTO) {
-        CartDTO cartDTO = cartService.addProductToCart(cartItemDTO.getProductId(), cartItemDTO.getQuantity());
+    public ResponseEntity<CartDTO> addToCart(@Valid @RequestBody AddCartItemRequestDTO request) {
+        CartDTO cartDTO = cartService.addProductToCart(request.getProductId(),
+                request.getQuantity());
         return ResponseEntity.ok(cartDTO);
     }
 
@@ -45,9 +46,10 @@ public class CartController {
     }
 
     @PatchMapping("/cart")
-    public ResponseEntity<CartDTO> updateCartItem(@Valid @RequestBody UpdateCartItemRequestDTO cartItemDTO) {
-        CartDTO cartDTO = cartService.updateCartItem(cartItemDTO.getProductId(), cartItemDTO.getQuantity(),
-                cartItemDTO.getAction());
+    public ResponseEntity<CartDTO> updateCartItemQuantity(
+            @Valid @RequestBody UpdateCartItemQuantityRequestDTO request) {
+        CartDTO cartDTO = cartService.updateCartItemQuantity(request.getProductId(), request.getQuantity(),
+                request.getAction());
         return ResponseEntity.ok(cartDTO);
     }
 
