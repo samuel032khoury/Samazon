@@ -82,33 +82,10 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null || strRoles.isEmpty()) {
-            Role userRole = roleRepository.findByRoleType(RoleType.ROLE_USER)
-                    .orElseThrow(() -> new APIException("Error: Role not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByRoleType(RoleType.ROLE_ADMIN)
-                                .orElseThrow(() -> new APIException("Error: Role not found."));
-                        roles.add(adminRole);
-                        break;
-                    case "seller":
-                        Role sellerRole = roleRepository.findByRoleType(RoleType.ROLE_SELLER)
-                                .orElseThrow(() -> new APIException("Error: Role not found."));
-                        roles.add(sellerRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByRoleType(RoleType.ROLE_USER)
-                                .orElseThrow(() -> new APIException("Error: Role not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
+        Role userRole = roleRepository.findByRoleType(RoleType.ROLE_USER)
+                .orElseThrow(() -> new APIException("Error: Role not found."));
+        roles.add(userRole);
         user.setRoles(roles);
         userRepository.save(user);
         return ResponseEntity.ok(new APIResponse("User registered successfully!", true));
