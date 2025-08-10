@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,21 +17,21 @@ import com.samazon.application.models.User;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
-public class DataSeedService {
+@AllArgsConstructor
+public class DataSeedService implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class);
     private static final String SUPER_ADMIN_USERNAME = "superadmin";
     private static final String SUPER_ADMIN_EMAIL = "superadmin@samazon.com";
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void seedData() {
@@ -139,5 +139,11 @@ public class DataSeedService {
             characters[j] = temp;
         }
         return new String(characters);
+    }
+
+    @Override
+    @Transactional
+    public void run(String... args) throws Exception {
+        this.seedData();
     }
 }
