@@ -20,4 +20,6 @@ public interface CartService {
     public List<Long> getAllCartIdsWithCategory(Long categoryId);
 
     public void recalculateCartTotal(Long cartId);
+
+    public void clearCart(Long id);
 }

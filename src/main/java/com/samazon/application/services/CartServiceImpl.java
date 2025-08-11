@@ -145,6 +145,20 @@ public class CartServiceImpl implements CartService {
         });
     }
 
+    @Override
+    @Transactional
+    public void clearCart(Long id) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", id));
+        cart.getCartItems().forEach(cartItem -> {
+            cartItem.getProduct().getCartItems().remove(cartItem);
+            cartItemRepository.delete(cartItem);
+        });
+        cart.getCartItems().clear();
+        cart.setTotalPrice(0.0);
+        cartRepository.save(cart);
+    }
+
     private int calculateNewQuantity(Integer currentQuantity, Integer requestedQuantity, String action) {
         return switch (action) {
             case "increment" -> currentQuantity + requestedQuantity;
