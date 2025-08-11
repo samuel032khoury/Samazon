@@ -16,8 +16,10 @@ import com.samazon.application.dto.ProductDTO;
 import com.samazon.application.dto.responses.ProductResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
+import com.samazon.application.models.Cart;
 import com.samazon.application.models.Category;
 import com.samazon.application.models.Product;
+import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
 import com.samazon.application.utils.PatchUtil;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CartRepository cartRepository;
     private final CategoryRepository categoryRepository;
     private final CartService cartService;
     private final ModelMapper modelMapper;
@@ -208,11 +211,26 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductDTO deleteProduct(Long productId) {
+        // First, remove all cart items containing this product
+        List<Long> cartIds = cartService.getAllCartIdsWithProduct(productId);
+
+        // Remove cart items with this product
+        cartIds.forEach(cartId -> {
+            Cart cart = cartRepository.findById(cartId).orElse(null);
+            if (cart != null) {
+                cart.getCartItems().removeIf(item -> item.getProduct().getId().equals(productId));
+                cartRepository.save(cart);
+            }
+        });
+
+        // Then recalculate totals
+        cartIds.forEach(cartService::recalculateCartTotal);
+
+        // Finally delete the product
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        List<Long> cartIds = cartService.getAllCartIdsWithProduct(productId);
-        productRepository.deleteById(productId);
-        cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
+
+        productRepository.delete(product);
         return modelMapper.map(product, ProductDTO.class);
     }
 

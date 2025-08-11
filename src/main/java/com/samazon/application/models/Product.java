@@ -47,8 +47,7 @@ public class Product {
     @JsonBackReference
     private User seller;
 
-    @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.REMOVE }, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
 }

@@ -135,7 +135,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void recalculateCartTotal(Long cartId) {
-        cartRepository.findById(cartId).ifPresent(this::updateCartTotal);
+        cartRepository.findById(cartId).ifPresent(cart -> {
+            cart.getCartItems().forEach(cartItem -> {
+                if (cartItem.getProduct() != null) {
+                    cartItem.setProduct(productRepository.findById(cartItem.getProduct().getId()).orElse(null));
+                }
+            });
+            updateCartTotal(cart);
+        });
     }
 
     private int calculateNewQuantity(Integer currentQuantity, Integer requestedQuantity, String action) {
@@ -170,7 +177,6 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart updateCartTotal(Cart cart) {
-        cartItemRepository.flush();
         double totalPrice = cart.getCartItems().stream()
                 .mapToDouble(item -> (item.getProduct().getSpecialPrice() != null ? item.getProduct().getSpecialPrice()
                         : item.getProduct().getPrice()) * item.getQuantity())
@@ -189,7 +195,7 @@ public class CartServiceImpl implements CartService {
 
     private CartDTO mapCartToDTO(Cart cart) {
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-        cartDTO.setItems(cart.getCartItems().stream()
+        cartDTO.setCartItems(cart.getCartItems().stream()
                 .map(cartItem -> modelMapper.map(cartItem, CartItemDTO.class))
                 .toList());
         return cartDTO;
