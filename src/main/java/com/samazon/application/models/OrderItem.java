@@ -1,5 +1,7 @@
 package com.samazon.application.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,12 +24,14 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
+    @JsonBackReference
     private Order order;
-    
+
     private Integer quantity;
     private Double discount;
     private Double priceAtOrder; // display as the original price when made the order

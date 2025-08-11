@@ -2,6 +2,9 @@ package com.samazon.application.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.samazon.application.models.OrderItem;
+
 import lombok.AllArgsConstructor;
 
 @Data
@@ -13,4 +16,13 @@ public class OrderItemDTO {
     private Integer quantity;
     private Double discount;
     private Double priceAtOrder;
+
+    public static OrderItemDTO fromEntity(OrderItem orderItem) {
+        return new OrderItemDTO(
+                orderItem.getId(),
+                orderItem.getProduct() != null ? orderItem.getProduct().getId() : null,
+                orderItem.getQuantity(),
+                orderItem.getDiscount(),
+                orderItem.getPriceAtOrder());
+    }
 }
