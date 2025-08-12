@@ -62,8 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
             throw new APIException("Category with this name already exists!");
         }
-        Category savedCategory = categoryRepository.save(category);
-        return modelMapper.map(savedCategory, CategoryResponse.class);
+        Category createdCategory = categoryRepository.save(category);
+        return modelMapper.map(createdCategory, CategoryResponse.class);
     }
 
     @Override
@@ -88,9 +88,8 @@ public class CategoryServiceImpl implements CategoryService {
                         .equals(category.getCategoryName())) {
             throw new APIException("Category with this name already exists!");
         }
-        category.setId(categoryId);
-        Category savedCategory = categoryRepository.save(category);
-        return modelMapper.map(savedCategory, CategoryResponse.class);
+        Category updatedCategory = categoryRepository.save(category);
+        return modelMapper.map(updatedCategory, CategoryResponse.class);
     }
 
 }
