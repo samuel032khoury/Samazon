@@ -4,28 +4,25 @@ import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.samazon.application.dto.ProductDTO;
-import com.samazon.application.dto.responses.ProductResponse;
+import com.samazon.application.dto.PagedResponse;
+import com.samazon.application.dto.products.ProductRequest;
+import com.samazon.application.dto.products.ProductResponse;
 
 public interface ProductService {
 
-    ProductDTO getProductById(Long productId);
+        ProductResponse getProductById(Long productId);
 
-    ProductResponse getAllProducts(Integer page, Integer size, String sortBy, String sortOrder);
+        PagedResponse<ProductResponse> getProducts(Long categoryId, String keyword, Integer page, Integer size,
+                        String sortBy, String sortOrder);
 
-    ProductDTO addProduct(ProductDTO productDTO, Long categoryId);
+        ProductResponse addProduct(ProductRequest request);
 
-    ProductResponse getProductsByCategory(Long categoryId, Integer page, Integer size, String sortBy, String sortOrder);
+        ProductResponse updateProduct(Long productId, ProductRequest productRequest);
 
-    ProductResponse searchProductsByKeyword(String keyword, Integer page, Integer size, String sortBy,
-            String sortOrder);
+        Void deleteProduct(Long productId);
 
-    ProductDTO updateProduct(Long productId, ProductDTO productDTO);
+        ProductResponse patchProduct(Long productId, ProductRequest productRequest);
 
-    ProductDTO deleteProduct(Long productId);
-
-    ProductDTO patchProduct(Long productId, ProductDTO productDTO);
-
-    ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException;
+        ProductResponse updateProductImage(Long productId, MultipartFile image) throws IOException;
 
 }

@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity(name = "categories")
 @Data
@@ -28,5 +29,6 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonManagedReference
+    @ToString.Exclude
     private List<Product> products = new ArrayList<>();
 }
