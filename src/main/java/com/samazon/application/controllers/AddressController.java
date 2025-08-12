@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samazon.application.dto.AddressDTO;
+import com.samazon.application.dto.addresses.AddressRequest;
+import com.samazon.application.dto.addresses.AddressResponse;
 import com.samazon.application.models.User;
 import com.samazon.application.services.AddressService;
 import com.samazon.application.utils.AuthUtil;
@@ -29,30 +30,30 @@ public class AddressController {
     private final AddressService addressService;
 
     @GetMapping("/admin/address-audit")
-    public ResponseEntity<List<AddressDTO>> getAllAddresses() {
-        List<AddressDTO> addressDTOs = addressService.getAllAddresses();
-        return new ResponseEntity<>(addressDTOs, HttpStatus.OK);
+    public ResponseEntity<List<AddressResponse>> getAllAddresses() {
+        List<AddressResponse> allAddressesResponse = addressService.getAllAddresses();
+        return new ResponseEntity<>(allAddressesResponse, HttpStatus.OK);
     }
 
     @GetMapping("/admin/address-audit/{addressId}")
-    public ResponseEntity<AddressDTO> getAddressById(@PathVariable Long addressId) {
-        AddressDTO addressDTO = addressService.getAddressById(addressId);
-        return new ResponseEntity<>(addressDTO, HttpStatus.OK);
+    public ResponseEntity<AddressResponse> getAddressById(@PathVariable Long addressId) {
+        AddressResponse addressResponse = addressService.getAddressById(addressId);
+        return new ResponseEntity<>(addressResponse, HttpStatus.OK);
     }
 
     @PostMapping("/user/addresses")
-    public ResponseEntity<AddressDTO> createAddress(
-            @Valid @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<AddressResponse> createAddress(
+            @Valid @RequestBody AddressRequest request) {
         User user = authUtil.getCurrentUser();
-        AddressDTO savedAddressDTO = addressService.createAddress(addressDTO, user);
-        return new ResponseEntity<>(savedAddressDTO, HttpStatus.CREATED);
+        AddressResponse createdAddressResponse = addressService.createAddress(request, user);
+        return new ResponseEntity<>(createdAddressResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("/user/addresses")
-    public ResponseEntity<List<AddressDTO>> getAddresses() {
+    public ResponseEntity<List<AddressResponse>> getAddresses() {
         User user = authUtil.getCurrentUser();
-        List<AddressDTO> addressDTOs = addressService.getAddressesByUser(user);
-        return new ResponseEntity<>(addressDTOs, HttpStatus.OK);
+        List<AddressResponse> userAddressesResponse = addressService.getAddressesByUser(user);
+        return new ResponseEntity<>(userAddressesResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/user/addresses/{addressId}")
@@ -63,10 +64,10 @@ public class AddressController {
     }
 
     @PutMapping("/user/addresses/{addressId}")
-    public ResponseEntity<AddressDTO> updateAddress(@PathVariable Long addressId,
-            @Valid @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<AddressResponse> updateAddress(@PathVariable Long addressId,
+            @Valid @RequestBody AddressRequest request) {
         User user = authUtil.getCurrentUser();
-        AddressDTO updatedAddressDTO = addressService.updateAddress(addressId, addressDTO, user);
-        return new ResponseEntity<>(updatedAddressDTO, HttpStatus.OK);
+        AddressResponse updatedAddressResponse = addressService.updateAddress(addressId, request, user);
+        return new ResponseEntity<>(updatedAddressResponse, HttpStatus.OK);
     }
 }

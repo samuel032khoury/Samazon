@@ -2,21 +2,22 @@ package com.samazon.application.services;
 
 import java.util.List;
 
-import com.samazon.application.dto.AddressDTO;
+import com.samazon.application.dto.addresses.AddressRequest;
+import com.samazon.application.dto.addresses.AddressResponse;
 import com.samazon.application.models.User;
 
 public interface AddressService {
 
-    AddressDTO createAddress(AddressDTO addressDTO, User user);
+    AddressResponse createAddress(AddressRequest request, User user);
 
-    List<AddressDTO> getAddressesByUser(User user);
+    List<AddressResponse> getAddressesByUser(User user);
 
-    List<AddressDTO> getAllAddresses();
+    List<AddressResponse> getAllAddresses();
 
-    AddressDTO getAddressById(Long addressId);
+    AddressResponse getAddressById(Long addressId);
 
-    void deleteAddress(Long addressId, User user);
+    Void deleteAddress(Long addressId, User user);
 
-    AddressDTO updateAddress(Long addressId, AddressDTO addressDTO, User user);
+    AddressResponse updateAddress(Long addressId, AddressRequest request, User user);
 
 }

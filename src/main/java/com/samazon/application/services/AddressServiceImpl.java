@@ -5,7 +5,8 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.samazon.application.dto.AddressDTO;
+import com.samazon.application.dto.addresses.AddressRequest;
+import com.samazon.application.dto.addresses.AddressResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.AccessDeniedException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
@@ -22,65 +23,65 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
 
     @Override
-    public List<AddressDTO> getAllAddresses() {
+    public List<AddressResponse> getAllAddresses() {
         List<Address> addresses = addressRepository.findAll();
         return addresses.stream()
-                .map(address -> modelMapper.map(address, AddressDTO.class))
+                .map(address -> modelMapper.map(address, AddressResponse.class))
                 .toList();
     }
 
     @Override
-    public AddressDTO createAddress(AddressDTO addressDTO, User user) {
+    public AddressResponse createAddress(AddressRequest request, User user) {
         boolean exists = addressRepository.existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCode(
-                user.getId(), addressDTO.getBuilding(), addressDTO.getStreet(), addressDTO.getCity(),
-                addressDTO.getState(), addressDTO.getCountry(), addressDTO.getZipCode());
+                user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
+                request.getCountry(), request.getZipCode());
         if (exists) {
             throw new APIException("Address already exists for this user with the same details");
         }
-        Address address = modelMapper.map(addressDTO, Address.class);
+        Address address = modelMapper.map(request, Address.class);
         List<Address> addressList = user.getAddresses();
         addressList.add(address);
         user.setAddresses(addressList);
         address.setUser(user);
-        Address savedAddress = addressRepository.save(address);
-        return modelMapper.map(savedAddress, AddressDTO.class);
+        Address createdAddress = addressRepository.save(address);
+        return modelMapper.map(createdAddress, AddressResponse.class);
     }
 
     @Override
-    public AddressDTO getAddressById(Long addressId) {
+    public AddressResponse getAddressById(Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
-        return modelMapper.map(address, AddressDTO.class);
+        return modelMapper.map(address, AddressResponse.class);
     }
 
     @Override
-    public List<AddressDTO> getAddressesByUser(User user) {
+    public List<AddressResponse> getAddressesByUser(User user) {
         List<Address> addresses = addressRepository.findByUser(user);
         return addresses.stream()
-                .map(address -> modelMapper.map(address, AddressDTO.class))
+                .map(address -> modelMapper.map(address, AddressResponse.class))
                 .toList();
     }
 
     @Override
-    public void deleteAddress(Long addressId, User user) {
+    public Void deleteAddress(Long addressId, User user) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         if (!address.getUser().equals(user)) {
             throw new AccessDeniedException("You do not have permission to delete this address");
         }
         addressRepository.delete(address);
+        return null;
     }
 
     @Override
-    public AddressDTO updateAddress(Long addressId, AddressDTO addressDTO, User user) {
+    public AddressResponse updateAddress(Long addressId, AddressRequest request, User user) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         if (!address.getUser().equals(user)) {
             throw new AccessDeniedException("You do not have permission to update this address");
         }
-        modelMapper.map(addressDTO, address);
-        address.setId(addressId);
+        modelMapper.map(request, address);
         Address updatedAddress = addressRepository.save(address);
-        return modelMapper.map(updatedAddress, AddressDTO.class);
+        return modelMapper.map(updatedAddress, AddressResponse.class);
     }
 }

@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.addresses;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressDTO {
-    private Long id;
+public class AddressRequest {
     @NotBlank
     @Size(min = 5, message = "Building must be at least 5 characters long")
     private String building;
