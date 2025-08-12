@@ -26,6 +26,7 @@ public class MediaController {
 
     @PostMapping("/media")
     public ResponseEntity<?> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
+        // TODO: upload to cloud storage
         String fileName = fileService.uploadMedia(uploadDir, file);
         Map<String, String> response = Map.of(
                 "fileName", fileName,
