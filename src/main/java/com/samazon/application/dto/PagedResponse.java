@@ -1,4 +1,4 @@
-package com.samazon.application.dto.responses;
+package com.samazon.application.dto;
 
 import java.util.List;
 
