@@ -28,7 +28,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @GetMapping("/categories")
+    @GetMapping("/public/categories")
     public ResponseEntity<PagedResponse<CategoryResponse>> getAllCategories(
             @RequestParam(name = "page", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "size", defaultValue = AppConstants.PAGE_SIZE) Integer size,
@@ -37,22 +37,19 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories(page, size, sortBy, sortOrder));
     }
 
-    // admin-only endpoints
-    @PostMapping("/categories")
+    @PostMapping("/admin/categories")
     public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
         CategoryResponse createdCategoryResponse = categoryService.createCategory(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategoryResponse);
     }
 
-    // admin-only endpoints
-    @DeleteMapping("/categories/{categoryId}")
+    @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long categoryId) {
         CategoryResponse deletedCategoryResponse = categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(deletedCategoryResponse);
     }
 
-    // admin-only endpoints
-    @PutMapping("/categories/{categoryId}")
+    @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long categoryId,
             @Valid @RequestBody CategoryRequest request) {
         CategoryResponse updatedCategoryResponse = categoryService.updateCategory(categoryId, request);
