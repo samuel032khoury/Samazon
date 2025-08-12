@@ -79,16 +79,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse updateCategory(Long categoryId, CategoryRequest request) {
-        Category category = modelMapper.map(request, Category.class);
-        if (!categoryRepository.existsById(categoryId)) {
-            throw new ResourceNotFoundException("Category", "id", categoryId);
-        }
-        if (categoryRepository.existsByCategoryName(category.getCategoryName())
-                && !categoryRepository.findById(categoryId).get().getCategoryName()
-                        .equals(category.getCategoryName())) {
+        Category existingCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+        if (categoryRepository.existsByCategoryName(request.getCategoryName())
+                && !existingCategory.getCategoryName().equals(request.getCategoryName())) {
             throw new APIException("Category with this name already exists!");
         }
-        Category updatedCategory = categoryRepository.save(category);
+        modelMapper.map(request, existingCategory);
+        Category updatedCategory = categoryRepository.save(existingCategory);
         return modelMapper.map(updatedCategory, CategoryResponse.class);
     }
 
