@@ -1,15 +1,15 @@
 package com.samazon.application.services;
 
-import com.samazon.application.dto.CategoryDTO;
-import com.samazon.application.dto.responses.CategoryResponse;
-import com.samazon.application.dto.responses.PagedResponse;
+import com.samazon.application.dto.PagedResponse;
+import com.samazon.application.dto.categories.CategoryRequest;
+import com.samazon.application.dto.categories.CategoryResponse;
 
 public interface CategoryService {
     PagedResponse<CategoryResponse> getAllCategories(Integer page, Integer size, String sortBy, String sortOrder);
 
-    CategoryDTO createCategory(CategoryDTO categoryDTO);
+    CategoryResponse createCategory(CategoryRequest request);
 
-    CategoryDTO deleteCategory(Long categoryId);
+    CategoryResponse deleteCategory(Long categoryId);
 
-    CategoryDTO updateCategory(Long categoryId, CategoryDTO category);
+    CategoryResponse updateCategory(Long categoryId, CategoryRequest request);
 }

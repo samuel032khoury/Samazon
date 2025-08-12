@@ -1,6 +1,5 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.categories;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDTO {
+public class CategoryResponse {
     private Long id;
-    @NotBlank
     private String categoryName;
 }
