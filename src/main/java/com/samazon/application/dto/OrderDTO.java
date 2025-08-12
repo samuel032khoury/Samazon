@@ -3,6 +3,8 @@ package com.samazon.application.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
+
 import com.samazon.application.models.Order;
 
 import lombok.AllArgsConstructor;
@@ -22,15 +24,11 @@ public class OrderDTO {
     private String orderStatus;
     private Long addressId;
 
-    public static OrderDTO fromEntity(Order order) {
-        return new OrderDTO(
-                order.getId(),
-                order.getUser() != null ? order.getUser().getId() : null,
-                order.getOrderItems().stream().map(OrderItemDTO::fromEntity).toList(),
-                order.getOrderDate(),
-                order.getPayment() != null ? order.getPayment().getId() : null,
-                order.getTotalAmount(),
-                order.getOrderStatus(),
-                order.getAddress() != null ? order.getAddress().getId() : null);
+    public static OrderDTO fromEntity(Order order, ModelMapper modelMapper) {
+        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+        orderDTO.setUserId(order.getUser().getId());
+        orderDTO.setAddressId(order.getAddress().getId());
+        orderDTO.setPaymentId(order.getPayment().getId());
+        return orderDTO;
     }
 }
