@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.samazon.application.dto.CategoryDTO;
 import com.samazon.application.dto.responses.CategoryResponse;
+import com.samazon.application.dto.responses.PagedResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
@@ -27,7 +28,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories(Integer page, Integer size, String sortBy, String sortOrder) {
+    public PagedResponse<CategoryResponse> getAllCategories(Integer page, Integer size, String sortBy,
+            String sortOrder) {
         if (page < 0 || size <= 0) {
             throw new APIException("Invalid page or size parameters!");
         }
@@ -41,10 +43,10 @@ public class CategoryServiceImpl implements CategoryService {
         if (categories.isEmpty()) {
             throw new APIException("No more categories available!");
         }
-        List<CategoryDTO> categoryDTOs = categories.stream()
-                .map(category -> modelMapper.map(category, CategoryDTO.class))
+        List<CategoryResponse> categoryDTOs = categories.stream()
+                .map(category -> modelMapper.map(category, CategoryResponse.class))
                 .toList();
-        return CategoryResponse.builder()
+        return PagedResponse.<CategoryResponse>builder()
                 .content(categoryDTOs)
                 .pageNumber(categoryPage.getNumber())
                 .pageSize(categoryPage.getSize())
