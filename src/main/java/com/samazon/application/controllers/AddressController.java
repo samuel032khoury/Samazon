@@ -28,19 +28,19 @@ public class AddressController {
     private final AuthUtil authUtil;
     private final AddressService addressService;
 
-    @GetMapping("/admin/addresses")
+    @GetMapping("/admin/address-audit")
     public ResponseEntity<List<AddressDTO>> getAllAddresses() {
         List<AddressDTO> addressDTOs = addressService.getAllAddresses();
         return new ResponseEntity<>(addressDTOs, HttpStatus.OK);
     }
 
-    @GetMapping("/admin/addresses/{addressId}")
+    @GetMapping("/admin/address-audit/{addressId}")
     public ResponseEntity<AddressDTO> getAddressById(@PathVariable Long addressId) {
         AddressDTO addressDTO = addressService.getAddressById(addressId);
         return new ResponseEntity<>(addressDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/addresses")
+    @PostMapping("/user/addresses")
     public ResponseEntity<AddressDTO> createAddress(
             @Valid @RequestBody AddressDTO addressDTO) {
         User user = authUtil.getCurrentUser();
@@ -48,21 +48,21 @@ public class AddressController {
         return new ResponseEntity<>(savedAddressDTO, HttpStatus.CREATED);
     }
 
-    @GetMapping("/addresses")
+    @GetMapping("/user/addresses")
     public ResponseEntity<List<AddressDTO>> getAddresses() {
         User user = authUtil.getCurrentUser();
         List<AddressDTO> addressDTOs = addressService.getAddressesByUser(user);
         return new ResponseEntity<>(addressDTOs, HttpStatus.OK);
     }
 
-    @DeleteMapping("/addresses/{addressId}")
+    @DeleteMapping("/user/addresses/{addressId}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long addressId) {
         User user = authUtil.getCurrentUser();
         addressService.deleteAddress(addressId, user);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/addresses/{addressId}")
+    @PutMapping("/user/addresses/{addressId}")
     public ResponseEntity<AddressDTO> updateAddress(@PathVariable Long addressId,
             @Valid @RequestBody AddressDTO addressDTO) {
         User user = authUtil.getCurrentUser();
