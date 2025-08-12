@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.auth;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserInfoDTO {
+public class UserInfoResponse {
     private Long id;
     private String username;
     private List<String> roles;

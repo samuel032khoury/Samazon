@@ -22,10 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.APIResponse;
-import com.samazon.application.dto.UserInfoDTO;
-import com.samazon.application.dto.requests.LoginRequestDTO;
-import com.samazon.application.dto.requests.SignUpRequestDTO;
+import com.samazon.application.dto.auth.LoginRequestDTO;
+import com.samazon.application.dto.auth.SignUpRequestDTO;
+import com.samazon.application.dto.auth.UserInfoResponse;
 import com.samazon.application.exceptions.APIException;
+import com.samazon.application.exceptions.UnauthorizedException;
 import com.samazon.application.models.Role;
 import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
@@ -34,7 +35,6 @@ import com.samazon.application.repositories.UserRepository;
 import com.samazon.application.security.jwt.JwtUtils;
 import com.samazon.application.services.UserDetailsImpl;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -50,7 +50,7 @@ public class AuthController {
     private final RoleRepository roleRepository;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDTO request) {
+    public ResponseEntity<UserInfoResponse> authenticateUser(@Valid @RequestBody LoginRequestDTO request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -61,20 +61,19 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new UserInfoDTO(userDetails.getId(), userDetails.getUsername(), roles));
+                    .body(new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
-                    .body(new APIResponse("Invalid username or password", false));
+            throw new UnauthorizedException("Invalid username or password");
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDTO request) {
+    public ResponseEntity<UserInfoResponse> registerUser(@Valid @RequestBody SignUpRequestDTO request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body(new APIResponse("Error: Username is already taken!", false));
+            throw new APIException("Error: Username is already taken!");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body(new APIResponse("Error: Email is already in use!", false));
+            throw new APIException("Error: Email is already in use!");
         }
 
         User user = new User();
@@ -87,12 +86,12 @@ public class AuthController {
                 .orElseThrow(() -> new APIException("Error: Role not found."));
         roles.add(userRole);
         user.setRoles(roles);
-        userRepository.save(user);
-        return ResponseEntity.ok(new APIResponse("User registered successfully!", true));
+        User newUser = userRepository.save(user);
+        return ResponseEntity.ok(new UserInfoResponse(newUser.getId(), newUser.getUsername(), List.of("ROLE_USER")));
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<?> logoutUser() {
+    public ResponseEntity<APIResponse> logoutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new APIResponse("You've been signed out!", true));
