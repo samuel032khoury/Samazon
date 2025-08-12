@@ -1,10 +1,11 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.orders;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 
+import com.samazon.application.dto.OrderItemDTO;
 import com.samazon.application.models.Order;
 
 import lombok.AllArgsConstructor;
