@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateCartItemQuantityRequestDTO {
-    @NotNull
-    Long productId;
+public class UpdateCartItemQuantityRequest {
     @NotNull
     @Min(value = 1, message = "Please provide a valid quantity")
     Integer quantity;
