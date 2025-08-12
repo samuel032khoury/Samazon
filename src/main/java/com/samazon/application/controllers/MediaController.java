@@ -24,7 +24,7 @@ public class MediaController {
     @Value("${project.media.upload.dir}")
     private String uploadDir;
 
-    @PostMapping("/admin/media")
+    @PostMapping("/media")
     public ResponseEntity<?> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException {
         String fileName = fileService.uploadMedia(uploadDir, file);
         Map<String, String> response = Map.of(
