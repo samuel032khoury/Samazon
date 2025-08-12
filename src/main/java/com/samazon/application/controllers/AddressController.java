@@ -28,7 +28,7 @@ public class AddressController {
     private final AuthUtil authUtil;
     private final AddressService addressService;
 
-    @GetMapping("/admin/addresses/all")
+    @GetMapping("/admin/addresses")
     public ResponseEntity<List<AddressDTO>> getAllAddresses() {
         List<AddressDTO> addressDTOs = addressService.getAllAddresses();
         return new ResponseEntity<>(addressDTOs, HttpStatus.OK);
