@@ -11,9 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.samazon.application.models.Cart;
 import com.samazon.application.models.Role;
 import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
+import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 
@@ -30,6 +32,8 @@ public class DataSeedService implements CommandLineRunner {
     private final RoleRepository roleRepository;
 
     private final UserRepository userRepository;
+
+    private final CartRepository cartRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -91,6 +95,10 @@ public class DataSeedService implements CommandLineRunner {
         superAdmin.setRoles(roles);
 
         userRepository.save(superAdmin);
+
+        Cart superAdminCart = new Cart();
+        superAdminCart.setUser(superAdmin);
+        cartRepository.save(superAdminCart);
 
         // Log credentials ONLY on first creation
         logger.warn("========================================");
