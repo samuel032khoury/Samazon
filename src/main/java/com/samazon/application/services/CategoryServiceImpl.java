@@ -28,6 +28,16 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
 
     @Override
+    public CategoryResponse createCategory(CategoryRequest request) {
+        Category category = modelMapper.map(request, Category.class);
+        if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
+            throw new APIException("Category with this name already exists!");
+        }
+        Category createdCategory = categoryRepository.save(category);
+        return modelMapper.map(createdCategory, CategoryResponse.class);
+    }
+
+    @Override
     public PagedResponse<CategoryResponse> getAllCategories(Integer page, Integer size, String sortBy,
             String sortOrder) {
         if (page < 0 || size <= 0) {
@@ -57,27 +67,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse createCategory(CategoryRequest request) {
-        Category category = modelMapper.map(request, Category.class);
-        if (categoryRepository.existsByCategoryName(category.getCategoryName())) {
-            throw new APIException("Category with this name already exists!");
-        }
-        Category createdCategory = categoryRepository.save(category);
-        return modelMapper.map(createdCategory, CategoryResponse.class);
-    }
-
-    @Override
-    @Transactional
-    public CategoryResponse deleteCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
-        List<Long> cartIds = cartService.getAllCartIdsWithCategory(categoryId);
-        categoryRepository.deleteById(categoryId);
-        cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
-        return modelMapper.map(category, CategoryResponse.class);
-    }
-
-    @Override
     public CategoryResponse updateCategory(Long categoryId, CategoryRequest request) {
         Category existingCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
@@ -88,6 +77,16 @@ public class CategoryServiceImpl implements CategoryService {
         modelMapper.map(request, existingCategory);
         Category updatedCategory = categoryRepository.save(existingCategory);
         return modelMapper.map(updatedCategory, CategoryResponse.class);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+        List<Long> cartIds = cartService.getAllCartIdsWithCategory(categoryId);
+        categoryRepository.deleteById(categoryId);
+        cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
     }
 
 }

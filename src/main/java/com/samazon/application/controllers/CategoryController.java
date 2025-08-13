@@ -28,6 +28,12 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    @PostMapping("/admin/categories")
+    public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
+        CategoryResponse createdCategoryResponse = categoryService.createCategory(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCategoryResponse);
+    }
+
     @GetMapping("/public/categories")
     public ResponseEntity<PagedResponse<CategoryResponse>> getAllCategories(
             @RequestParam(name = "page", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
@@ -37,22 +43,17 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories(page, size, sortBy, sortOrder));
     }
 
-    @PostMapping("/admin/categories")
-    public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
-        CategoryResponse createdCategoryResponse = categoryService.createCategory(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCategoryResponse);
-    }
-
-    @DeleteMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long categoryId) {
-        CategoryResponse deletedCategoryResponse = categoryService.deleteCategory(categoryId);
-        return ResponseEntity.ok(deletedCategoryResponse);
-    }
-
     @PutMapping("/admin/categories/{categoryId}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long categoryId,
             @Valid @RequestBody CategoryRequest request) {
         CategoryResponse updatedCategoryResponse = categoryService.updateCategory(categoryId, request);
         return ResponseEntity.ok(updatedCategoryResponse);
     }
+
+    @DeleteMapping("/admin/categories/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
