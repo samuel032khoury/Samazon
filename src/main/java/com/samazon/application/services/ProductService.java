@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.samazon.application.dto.PagedResponse;
+import com.samazon.application.dto.common.PagedResponse;
 import com.samazon.application.dto.products.ProductRequest;
 import com.samazon.application.dto.products.ProductResponse;
 

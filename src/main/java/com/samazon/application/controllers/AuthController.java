@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samazon.application.dto.APIResponse;
 import com.samazon.application.dto.auth.LoginRequest;
 import com.samazon.application.dto.auth.SignUpRequest;
 import com.samazon.application.dto.auth.UserInfoResponse;
+import com.samazon.application.dto.common.APIResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.UnauthorizedException;
 import com.samazon.application.models.Role;

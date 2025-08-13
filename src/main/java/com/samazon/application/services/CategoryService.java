@@ -1,8 +1,8 @@
 package com.samazon.application.services;
 
-import com.samazon.application.dto.PagedResponse;
 import com.samazon.application.dto.categories.CategoryRequest;
 import com.samazon.application.dto.categories.CategoryResponse;
+import com.samazon.application.dto.common.PagedResponse;
 
 public interface CategoryService {
     CategoryResponse createCategory(CategoryRequest request);

@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

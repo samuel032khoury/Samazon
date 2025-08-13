@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samazon.application.dto.APIResponse;
+import com.samazon.application.dto.common.APIResponse;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Role;
 import com.samazon.application.models.RoleType;

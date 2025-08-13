@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.config.AppConstants;
-import com.samazon.application.dto.PagedResponse;
 import com.samazon.application.dto.categories.CategoryRequest;
 import com.samazon.application.dto.categories.CategoryResponse;
+import com.samazon.application.dto.common.PagedResponse;
 import com.samazon.application.services.CategoryService;
 
 import jakarta.validation.Valid;

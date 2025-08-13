@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.samazon.application.dto.PagedResponse;
 import com.samazon.application.dto.categories.CategoryRequest;
 import com.samazon.application.dto.categories.CategoryResponse;
+import com.samazon.application.dto.common.PagedResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
