@@ -18,11 +18,10 @@ import com.samazon.application.dto.products.ProductRequest;
 import com.samazon.application.dto.products.ProductResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
-import com.samazon.application.models.Cart;
 import com.samazon.application.models.Category;
 import com.samazon.application.models.Product;
 import com.samazon.application.models.User;
-import com.samazon.application.repositories.CartRepository;
+import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
 import com.samazon.application.repositories.UserRepository;
@@ -36,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
 
     private final CartService cartService;
@@ -221,24 +220,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Void deleteProduct(Long productId) {
-        // First, remove all cart items containing this product
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
+                        productId));
+
         List<Long> cartIds = cartService.getAllCartIdsWithProduct(productId);
 
-        // Remove cart items with this product
-        cartIds.forEach(cartId -> {
-            Cart cart = cartRepository.findById(cartId).orElse(null);
-            if (cart != null) {
-                cart.getCartItems().removeIf(item -> item.getProduct().getId().equals(productId));
-                cartRepository.save(cart);
-                cartService.recalculateCartTotal(cartId);
-            }
-        });
-
-        // Finally delete the product
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        cartItemRepository.deleteAllByProductId(productId);
 
         productRepository.delete(product);
+
+        // Recalculate totals after removal
+        cartIds.forEach(cartService::recalculateCartTotal);
         return null;
     }
 

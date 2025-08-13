@@ -191,9 +191,15 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart updateCartTotal(Cart cart) {
+        cart.getCartItems().removeIf(ci -> ci.getProduct() == null);
+
         double totalPrice = cart.getCartItems().stream()
-                .mapToDouble(item -> (item.getProduct().getSpecialPrice() != null ? item.getProduct().getSpecialPrice()
-                        : item.getProduct().getPrice()) * item.getQuantity())
+                .filter(item -> item.getProduct() != null) // safety
+                .mapToDouble(item -> {
+                    Product p = item.getProduct();
+                    double unitPrice = p.getSpecialPrice() != null ? p.getSpecialPrice() : p.getPrice();
+                    return unitPrice * item.getQuantity();
+                })
                 .sum();
         cart.setTotalPrice(totalPrice);
         return cartRepository.save(cart);
