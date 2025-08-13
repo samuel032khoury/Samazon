@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.APIResponse;
-import com.samazon.application.dto.auth.LoginRequestDTO;
-import com.samazon.application.dto.auth.SignUpRequestDTO;
+import com.samazon.application.dto.auth.LoginRequest;
+import com.samazon.application.dto.auth.SignUpRequest;
 import com.samazon.application.dto.auth.UserInfoResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.UnauthorizedException;
@@ -52,7 +52,7 @@ public class AuthController {
     private final CartService cartService;
 
     @PostMapping("/signin")
-    public ResponseEntity<UserInfoResponse> authenticateUser(@Valid @RequestBody LoginRequestDTO request) {
+    public ResponseEntity<UserInfoResponse> authenticateUser(@Valid @RequestBody LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -70,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserInfoResponse> registerUser(@Valid @RequestBody SignUpRequestDTO request) {
+    public ResponseEntity<UserInfoResponse> registerUser(@Valid @RequestBody SignUpRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new APIException("Error: Username is already taken!");
         }
