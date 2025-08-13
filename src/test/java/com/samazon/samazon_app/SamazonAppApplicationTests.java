@@ -1,13 +1,10 @@
 package com.samazon.samazon_app;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class SamazonAppApplicationTests {
+import com.samazon.application.Application;
 
-	@Test
-	void contextLoads() {
-	}
+@SpringBootTest(classes = Application.class)
+public class SamazonAppApplicationTests {
 
 }

@@ -12,6 +12,7 @@ public class SecurityEndpointsConfig {
                         "/h2-console/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
+                        "/docs/**",
                         "/media/**"
         };
 
