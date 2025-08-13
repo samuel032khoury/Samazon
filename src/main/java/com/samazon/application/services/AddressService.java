@@ -10,14 +10,14 @@ public interface AddressService {
 
     AddressResponse createAddress(AddressRequest request, User user);
 
-    List<AddressResponse> getAddressesByUser(User user);
-
     List<AddressResponse> getAllAddresses();
+
+    List<AddressResponse> getAddressesByUser(User user);
 
     AddressResponse getAddressById(Long addressId);
 
-    Void deleteAddress(Long addressId, User user);
-
     AddressResponse updateAddress(Long addressId, AddressRequest request, User user);
+
+    Void deleteAddress(Long addressId, User user);
 
 }

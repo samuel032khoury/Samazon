@@ -81,12 +81,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deleteCategory(Long categoryId) {
+    public Void deleteCategory(Long categoryId) {
         categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         List<Long> cartIds = cartService.getAllCartIdsWithCategory(categoryId);
         categoryRepository.deleteById(categoryId);
         cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
+        return null;
     }
 
 }
