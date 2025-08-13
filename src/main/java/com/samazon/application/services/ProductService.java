@@ -23,5 +23,5 @@ public interface ProductService {
 
         ProductResponse updateProductImage(Long productId, MultipartFile image) throws IOException;
 
-        Void deleteProduct(Long productId);
+        void deleteProduct(Long productId);
 }

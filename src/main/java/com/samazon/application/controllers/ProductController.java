@@ -60,7 +60,8 @@ public class ProductController {
     }
 
     @PatchMapping("/products/{productId}")
-    public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long productId,
+    public ResponseEntity<ProductResponse> patchProduct(
+            @PathVariable Long productId,
             @RequestBody @Validated(OnPatch.class) ProductRequest request) {
         ProductResponse patchedProductResponse = productService.patchProduct(productId, request);
         return ResponseEntity.ok(patchedProductResponse);
@@ -81,9 +82,9 @@ public class ProductController {
     }
 
     @DeleteMapping("/products/{productId}")
-    public Void deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
-        return null;
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -219,7 +219,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Void deleteProduct(Long productId) {
+    public void deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
                         productId));
@@ -230,9 +230,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.delete(product);
 
-        // Recalculate totals after removal
         cartIds.forEach(cartService::recalculateCartTotal);
-        return null;
     }
 
     private Double calculateSpecialPrice(Double price, Double discount) {
