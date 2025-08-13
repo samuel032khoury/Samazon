@@ -59,13 +59,6 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @PutMapping("/products/{productId}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long productId,
-            @RequestBody @Validated(OnCreateOrUpdate.class) ProductRequest request) {
-        ProductResponse updatedProductResponse = productService.updateProduct(productId, request);
-        return ResponseEntity.ok(updatedProductResponse);
-    }
-
     @PatchMapping("/products/{productId}")
     public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long productId,
             @RequestBody @Validated(OnPatch.class) ProductRequest request) {
@@ -73,14 +66,21 @@ public class ProductController {
         return ResponseEntity.ok(patchedProductResponse);
     }
 
-    @PutMapping("/product/{productId}/image")
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long productId,
+            @RequestBody @Validated(OnCreateOrUpdate.class) ProductRequest request) {
+        ProductResponse updatedProductResponse = productService.updateProduct(productId, request);
+        return ResponseEntity.ok(updatedProductResponse);
+    }
+
+    @PutMapping("/products/{productId}/image")
     public ResponseEntity<ProductResponse> updateProductImage(@PathVariable Long productId,
             @RequestParam("image") MultipartFile image) throws IOException {
         ProductResponse updatedProductResponse = productService.updateProductImage(productId, image);
         return ResponseEntity.ok(updatedProductResponse);
     }
 
-    @DeleteMapping("/product/{productId}")
+    @DeleteMapping("/products/{productId}")
     public Void deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         return null;

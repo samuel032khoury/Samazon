@@ -19,9 +19,10 @@ public class ProductRequest {
     @NotBlank(groups = OnCreateOrUpdate.class)
     private String name;
 
+    @NotNull(groups = OnCreateOrUpdate.class)
     private String description;
 
-    @Size(min = 10, message = "must not be empty", groups = { OnCreateOrUpdate.class, OnPatch.class })
+    @Size(min = 1, message = "must not be empty", groups = { OnCreateOrUpdate.class, OnPatch.class })
     private String image;
 
     @NotNull(groups = OnCreateOrUpdate.class)
