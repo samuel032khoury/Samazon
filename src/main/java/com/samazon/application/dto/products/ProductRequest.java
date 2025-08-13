@@ -39,7 +39,4 @@ public class ProductRequest {
 
     @NotNull(groups = OnCreateOrUpdate.class)
     private Long categoryId;
-
-    @NotNull(groups = OnCreateOrUpdate.class)
-    private Long sellerId;
 }

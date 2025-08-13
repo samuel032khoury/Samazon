@@ -17,14 +17,16 @@ import com.samazon.application.dto.PagedResponse;
 import com.samazon.application.dto.products.ProductRequest;
 import com.samazon.application.dto.products.ProductResponse;
 import com.samazon.application.exceptions.APIException;
+import com.samazon.application.exceptions.AccessDeniedException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
 import com.samazon.application.models.Product;
+import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
 import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
-import com.samazon.application.repositories.UserRepository;
+import com.samazon.application.utils.AuthUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +38,11 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final CartItemRepository cartItemRepository;
-    private final UserRepository userRepository;
 
     private final CartService cartService;
     private final FileService fileService;
 
+    private final AuthUtil authUtil;
     private final ModelMapper modelMapper;
 
     @Value("${project.media.upload.dir}")
@@ -51,8 +53,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
 
-        User seller = userRepository.findById(request.getSellerId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getSellerId()));
+        User seller = authUtil.getCurrentUser();
 
         if (productRepository.existsByCategoryIdAndNameIgnoreCase(category.getId(), request.getName())) {
             throw new APIException("Product with name '" + request.getName() + "' already exists in category '"
@@ -94,24 +95,12 @@ public class ProductServiceImpl implements ProductService {
         if (keyword != null && !keyword.isEmpty() && categoryId != null) {
             productPage = productRepository.findByCategoryIdAndNameContainingIgnoreCase(categoryId, keyword,
                     pageDetails);
-            if (productPage.getContent().isEmpty()) {
-                throw new APIException("No products found for the keyword: " + keyword + " in this category!");
-            }
         } else if (keyword != null && !keyword.isEmpty()) {
             productPage = productRepository.findByNameContainingIgnoreCase(keyword, pageDetails);
-            if (productPage.getContent().isEmpty()) {
-                throw new APIException("No products found for the keyword: " + keyword);
-            }
         } else if (categoryId != null) {
             productPage = productRepository.findByCategoryId(categoryId, pageDetails);
-            if (productPage.getContent().isEmpty()) {
-                throw new APIException("No products available for this category!");
-            }
         } else {
             productPage = productRepository.findAll(pageDetails);
-            if (productPage.getContent().isEmpty()) {
-                throw new APIException("No more products available!");
-            }
         }
         List<ProductResponse> responses = productPage.getContent().stream()
                 .map(product -> modelMapper.map(product, ProductResponse.class))
@@ -131,6 +120,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse patchProduct(Long productId, ProductRequest request) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        checkModificationPermission(existingProduct);
 
         Long targetCategoryId = request.getCategoryId() != null
                 ? request.getCategoryId()
@@ -177,12 +167,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(Long productId, ProductRequest request) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-
-        // disallow changing seller
-        if (!existingProduct.getSeller().getId().equals(request.getSellerId())) {
-            throw new APIException("Cannot change seller of a product once created!");
-        }
-
+        checkModificationPermission(existingProduct);
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
         if (productRepository.existsByCategoryIdAndNameIgnoreCaseAndIdNot(category.getId(), request.getName(),
@@ -209,6 +194,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProductImage(Long productId, MultipartFile image) throws IOException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        checkModificationPermission(product);
         if (image != null && !image.isEmpty()) {
             String imageUrl = fileService.uploadMedia(mediaUploadDir, image);
             product.setImage(imageUrl);
@@ -223,7 +209,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
                         productId));
-
+        checkModificationPermission(product);
         List<Long> cartIds = cartService.getAllCartIdsWithProduct(productId);
 
         cartItemRepository.deleteAllByProductId(productId);
@@ -238,5 +224,14 @@ public class ProductServiceImpl implements ProductService {
             return null;
         }
         return ((int) ((price - (price * (discount / 100))) * 100.0)) / 100.0;
+    }
+
+    private void checkModificationPermission(Product product) {
+        if (product.getSeller().getId() != authUtil.getCurrentUser().getId() &&
+                !authUtil.getCurrentUser().getRoles().stream()
+                        .anyMatch(role -> role.getRoleType().equals(RoleType.ROLE_ADMIN)
+                                || role.getRoleType().equals(RoleType.ROLE_SUPER_ADMIN))) {
+            throw new AccessDeniedException("You don't have permission to modify this product!");
+        }
     }
 }
