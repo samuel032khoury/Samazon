@@ -12,6 +12,7 @@ import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
 import com.samazon.application.models.CartItem;
 import com.samazon.application.models.Product;
+import com.samazon.application.models.User;
 import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.ProductRepository;
@@ -159,6 +160,16 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
     }
 
+    @Override
+    @Transactional
+    public void createCartForUser(User newUser) {
+        Cart cart = new Cart();
+        cart.setUser(newUser);
+        cart.setTotalPrice(0.0);
+        newUser.setCart(cart);
+        cartRepository.save(cart);
+    }
+
     private int calculateNewQuantity(Integer currentQuantity, Integer requestedQuantity, String action) {
         return switch (action) {
             case "increment" -> currentQuantity + requestedQuantity;
@@ -207,9 +218,7 @@ public class CartServiceImpl implements CartService {
 
     private Cart _getCurrentUserCart() {
         Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
-                .orElse(new Cart());
-        userCart.setUser(authUtil.getCurrentUser());
-        userCart = cartRepository.save(userCart);
+                .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
         return userCart;
     }
 

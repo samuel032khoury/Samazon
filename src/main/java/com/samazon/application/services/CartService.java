@@ -3,6 +3,7 @@ package com.samazon.application.services;
 import java.util.List;
 
 import com.samazon.application.dto.CartDTO;
+import com.samazon.application.models.User;
 
 public interface CartService {
     public CartDTO addProductToCart(Long productId, Integer quantity);
@@ -22,4 +23,6 @@ public interface CartService {
     public void recalculateCartTotal(Long cartId);
 
     public void clearCart(Long id);
+
+    public void createCartForUser(User newUser);
 }

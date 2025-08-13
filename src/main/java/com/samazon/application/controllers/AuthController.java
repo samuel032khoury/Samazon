@@ -33,6 +33,7 @@ import com.samazon.application.models.User;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 import com.samazon.application.security.jwt.JwtUtils;
+import com.samazon.application.services.CartService;
 import com.samazon.application.services.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -48,6 +49,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final RoleRepository roleRepository;
+    private final CartService cartService;
 
     @PostMapping("/signin")
     public ResponseEntity<UserInfoResponse> authenticateUser(@Valid @RequestBody LoginRequestDTO request) {
@@ -87,6 +89,7 @@ public class AuthController {
         roles.add(userRole);
         user.setRoles(roles);
         User newUser = userRepository.save(user);
+        cartService.createCartForUser(user);
         return ResponseEntity.ok(new UserInfoResponse(newUser.getId(), newUser.getUsername(), List.of("ROLE_USER")));
     }
 
