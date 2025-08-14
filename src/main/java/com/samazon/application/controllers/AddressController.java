@@ -50,7 +50,7 @@ public class AddressController {
         return new ResponseEntity<>(userAddressesResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/user/address/{addressId}")
+    @GetMapping("/user/addresses/{addressId}")
     public ResponseEntity<AddressResponse> getAddressById(@PathVariable Long addressId) {
         AddressResponse addressResponse = addressService.getAddressById(addressId);
         return new ResponseEntity<>(addressResponse, HttpStatus.OK);
