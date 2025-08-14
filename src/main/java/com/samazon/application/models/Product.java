@@ -16,12 +16,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "products")
-@Data
+@Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,13 +48,16 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "seller_id")
     @JsonBackReference
+    @ToString.Exclude
     private User seller;
 
     @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JsonManagedReference
+    @ToString.Exclude
     private final List<CartItem> cartItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JsonManagedReference
+    @ToString.Exclude
     private final List<OrderItem> orderItems = new ArrayList<>();
 }
