@@ -6,8 +6,11 @@ import com.samazon.application.dto.addresses.AddressRequest;
 import com.samazon.application.dto.addresses.AddressResponse;
 import com.samazon.application.models.User;
 
+import jakarta.transaction.Transactional;
+
 public interface AddressService {
 
+    @Transactional
     AddressResponse createAddress(AddressRequest request, User user);
 
     List<AddressResponse> getAllAddresses();

@@ -14,6 +14,7 @@ import com.samazon.application.models.Address;
 import com.samazon.application.models.User;
 import com.samazon.application.repositories.AddressRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -23,20 +24,30 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
 
     @Override
+    @Transactional
     public AddressResponse createAddress(AddressRequest request, User user) {
-        boolean exists = addressRepository.existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCode(
-                user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
-                request.getCountry(), request.getZipCode());
+        if (user.getId() == null) {
+            throw new APIException("User must be persisted before adding an address");
+        }
+        boolean exists = addressRepository
+                .existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCodeAndIdNot(
+                        user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
+                        request.getCountry(), request.getZipCode(), null);
         if (exists) {
             throw new APIException("Address already exists for this user with the same details");
         }
         Address address = modelMapper.map(request, Address.class);
-        List<Address> addressList = user.getAddresses();
-        addressList.add(address);
-        user.setAddresses(addressList);
+        System.out.println("Address: " + address);
         address.setUser(user);
-        Address createdAddress = addressRepository.save(address);
-        return modelMapper.map(createdAddress, AddressResponse.class);
+        try {
+            Address createdAddress = addressRepository.save(address);
+            if (user.getAddresses() != null) {
+                user.getAddresses().add(createdAddress);
+            }
+            return modelMapper.map(createdAddress, AddressResponse.class);
+        } catch (Exception e) {
+            throw new APIException("Address already exists for this user with the same details");
+        }
     }
 
     @Override
@@ -68,6 +79,11 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         if (!address.getUser().equals(user)) {
             throw new AccessDeniedException("You do not have permission to update this address");
+        }
+        if (addressRepository.existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCodeAndIdNot(
+                user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
+                request.getCountry(), request.getZipCode(), addressId)) {
+            throw new APIException("Address already exists for this user with the same details");
         }
         modelMapper.map(request, address);
         Address updatedAddress = addressRepository.save(address);
