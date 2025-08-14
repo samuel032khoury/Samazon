@@ -21,15 +21,18 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "users")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email") })
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,25 +43,27 @@ public class User {
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ToString.Exclude
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.PERSIST,
-            CascadeType.MERGE }, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Address> addresses = new ArrayList<>();
-
-    @OneToMany(mappedBy = "seller", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
-    @JsonManagedReference
-    @ToString.Exclude
-    private Set<Product> products = new HashSet<>();
-
-    @OneToOne(mappedBy = "user", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "cart_id")
     @ToString.Exclude
     private Cart cart;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ToString.Exclude
+    private final List<Address> addresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ToString.Exclude
+    private Set<Product> products = new HashSet<>();
+
     @OneToMany(mappedBy = "user", cascade = { CascadeType.PERSIST,
             CascadeType.MERGE }, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
 }
