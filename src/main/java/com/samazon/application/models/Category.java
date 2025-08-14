@@ -12,14 +12,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "categories")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +33,5 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @ToString.Exclude
-    private List<Product> products = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
 }
