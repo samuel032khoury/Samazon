@@ -43,6 +43,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonBackReference
+    @ToString.Exclude
     private Category category;
 
     @ManyToOne
@@ -56,7 +57,7 @@ public class Product {
     @ToString.Exclude
     private final List<CartItem> cartItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JsonManagedReference
     @ToString.Exclude
     private final List<OrderItem> orderItems = new ArrayList<>();
