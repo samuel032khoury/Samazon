@@ -23,14 +23,6 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
 
     @Override
-    public List<AddressResponse> getAllAddresses() {
-        List<Address> addresses = addressRepository.findAll();
-        return addresses.stream()
-                .map(address -> modelMapper.map(address, AddressResponse.class))
-                .toList();
-    }
-
-    @Override
     public AddressResponse createAddress(AddressRequest request, User user) {
         boolean exists = addressRepository.existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCode(
                 user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
@@ -48,10 +40,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressResponse getAddressById(Long addressId) {
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
-        return modelMapper.map(address, AddressResponse.class);
+    public List<AddressResponse> getAllAddresses() {
+        List<Address> addresses = addressRepository.findAll();
+        return addresses.stream()
+                .map(address -> modelMapper.map(address, AddressResponse.class))
+                .toList();
     }
 
     @Override
@@ -63,14 +56,10 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Void deleteAddress(Long addressId, User user) {
+    public AddressResponse getAddressById(Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
-        if (!address.getUser().equals(user)) {
-            throw new AccessDeniedException("You do not have permission to delete this address");
-        }
-        addressRepository.delete(address);
-        return null;
+        return modelMapper.map(address, AddressResponse.class);
     }
 
     @Override
@@ -84,4 +73,16 @@ public class AddressServiceImpl implements AddressService {
         Address updatedAddress = addressRepository.save(address);
         return modelMapper.map(updatedAddress, AddressResponse.class);
     }
+
+    @Override
+    public Void deleteAddress(Long addressId, User user) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
+        if (!address.getUser().equals(user)) {
+            throw new AccessDeniedException("You do not have permission to delete this address");
+        }
+        addressRepository.delete(address);
+        return null;
+    }
+
 }
