@@ -2,17 +2,17 @@ package com.samazon.application.services;
 
 import java.util.List;
 
-import com.samazon.application.dto.CartDTO;
+import com.samazon.application.dto.carts.CartResponse;
 import com.samazon.application.models.User;
 
 public interface CartService {
-    public CartDTO addProductToCart(Long productId, Integer quantity);
+    public CartResponse addProductToCart(Long productId, Integer quantity);
 
-    public List<CartDTO> getAllCarts();
+    public List<CartResponse> getAllCarts();
 
-    public CartDTO getCurrentUserCart();
+    public CartResponse getCurrentUserCart();
 
-    public CartDTO updateCartItemQuantity(Long productId, Integer quantity, String action);
+    public CartResponse updateCartItemQuantity(Long productId, Integer quantity, String action);
 
     public void removeCartItem(Long productId);
 

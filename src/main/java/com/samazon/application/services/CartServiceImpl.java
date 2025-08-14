@@ -5,8 +5,8 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.samazon.application.dto.CartDTO;
-import com.samazon.application.dto.CartItemDTO;
+import com.samazon.application.dto.carts.CartItemResponse;
+import com.samazon.application.dto.carts.CartResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
@@ -34,7 +34,7 @@ public class CartServiceImpl implements CartService {
     private final ModelMapper modelMapper;
 
     @Override
-    public CartDTO addProductToCart(Long productId, Integer quantity) {
+    public CartResponse addProductToCart(Long productId, Integer quantity) {
         // Find existing cart or create a new one
         Cart cart = _getCurrentUserCart();
 
@@ -69,7 +69,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartDTO> getAllCarts() {
+    public List<CartResponse> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
         return carts.stream()
                 .map(this::mapCartToDTO)
@@ -77,14 +77,14 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDTO getCurrentUserCart() {
+    public CartResponse getCurrentUserCart() {
         Cart userCart = _getCurrentUserCart();
         return mapCartToDTO(userCart);
     }
 
     @Override
     @Transactional
-    public CartDTO updateCartItemQuantity(Long productId, Integer quantity, String action) {
+    public CartResponse updateCartItemQuantity(Long productId, Integer quantity, String action) {
         Long userId = authUtil.getCurrentUser().getId();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
@@ -223,11 +223,11 @@ public class CartServiceImpl implements CartService {
         return userCart;
     }
 
-    private CartDTO mapCartToDTO(Cart cart) {
-        CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-        cartDTO.setCartItems(cart.getCartItems().stream()
-                .map(cartItem -> modelMapper.map(cartItem, CartItemDTO.class))
+    private CartResponse mapCartToDTO(Cart cart) {
+        CartResponse response = modelMapper.map(cart, CartResponse.class);
+        response.setCartItems(cart.getCartItems().stream()
+                .map(cartItem -> modelMapper.map(cartItem, CartItemResponse.class))
                 .toList());
-        return cartDTO;
+        return response;
     }
 }

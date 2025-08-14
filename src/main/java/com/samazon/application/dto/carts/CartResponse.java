@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.carts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartDTO {
+public class CartResponse {
     private Long id;
     private Double totalPrice = 0.0;
-    private List<CartItemDTO> cartItems = new ArrayList<>();
+    private List<CartItemResponse> cartItems = new ArrayList<>();
 }

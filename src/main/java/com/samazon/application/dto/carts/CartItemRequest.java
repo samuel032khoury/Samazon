@@ -1,4 +1,4 @@
-package com.samazon.application.dto.requests;
+package com.samazon.application.dto.carts;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddCartItemRequestDTO {
-    @NotNull
-    Long productId;
+public class CartItemRequest {
     @NotNull
     @Min(value = 1, message = "Quantity must be at least 1")
     Integer quantity;
+    @NotNull
+    Long productId;
 }

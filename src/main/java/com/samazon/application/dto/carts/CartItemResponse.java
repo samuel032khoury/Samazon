@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.carts;
 
 import com.samazon.application.dto.products.ProductResponse;
 
@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartItemDTO {
+public class CartItemResponse {
     private Long id;
-    private Long cartId;
-    private ProductResponse product;
     private Integer quantity;
     private Double discount;
     private Double unitPriceAtAddToCart;
+    private Long cartId;
+    private ProductResponse product;
 }

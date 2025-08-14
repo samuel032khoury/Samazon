@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samazon.application.dto.CartDTO;
-import com.samazon.application.dto.requests.AddCartItemRequestDTO;
+import com.samazon.application.dto.carts.CartItemRequest;
+import com.samazon.application.dto.carts.CartResponse;
 import com.samazon.application.dto.requests.UpdateCartItemQuantityRequest;
 import com.samazon.application.services.CartService;
 
@@ -27,30 +27,30 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping("/admin/cart-audit")
-    public ResponseEntity<List<CartDTO>> getAllCarts() {
-        List<CartDTO> cartDTOs = cartService.getAllCarts();
-        return ResponseEntity.ok(cartDTOs);
+    public ResponseEntity<List<CartResponse>> getAllCarts() {
+        List<CartResponse> responses = cartService.getAllCarts();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/user/cart")
-    public ResponseEntity<CartDTO> addToCart(@Valid @RequestBody AddCartItemRequestDTO request) {
-        CartDTO cartDTO = cartService.addProductToCart(request.getProductId(),
+    public ResponseEntity<CartResponse> addToCart(@Valid @RequestBody CartItemRequest request) {
+        CartResponse response = cartService.addProductToCart(request.getProductId(),
                 request.getQuantity());
-        return ResponseEntity.ok(cartDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/cart")
-    public ResponseEntity<CartDTO> getCurrentUserCart() {
-        CartDTO cartDTO = cartService.getCurrentUserCart();
-        return ResponseEntity.ok(cartDTO);
+    public ResponseEntity<CartResponse> getCurrentUserCart() {
+        CartResponse response = cartService.getCurrentUserCart();
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/user/cart/item")
-    public ResponseEntity<CartDTO> updateCartItemQuantity(@RequestParam Long productId,
+    public ResponseEntity<CartResponse> updateCartItemQuantity(@RequestParam Long productId,
             @Valid @RequestBody UpdateCartItemQuantityRequest request) {
-        CartDTO cartDTO = cartService.updateCartItemQuantity(productId, request.getQuantity(),
+        CartResponse response = cartService.updateCartItemQuantity(productId, request.getQuantity(),
                 request.getAction());
-        return ResponseEntity.ok(cartDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/user/cart/item")
