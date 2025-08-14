@@ -55,7 +55,8 @@ public class CartServiceImpl implements CartService {
                 .product(product)
                 .quantity(quantity)
                 .discount(product.getDiscount())
-                .priceAtAddToCart(product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
+                .unitPriceAtAddToCart(
+                        product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
                 .build();
         cartItemRepository.save(cartItem);
 

@@ -15,5 +15,5 @@ public class CartItemDTO {
     private ProductResponse product;
     private Integer quantity;
     private Double discount;
-    private Double priceAtAddToCart;
+    private Double unitPriceAtAddToCart;
 }
