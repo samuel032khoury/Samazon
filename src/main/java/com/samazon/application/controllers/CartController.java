@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.carts.CartItemRequest;
 import com.samazon.application.dto.carts.CartResponse;
-import com.samazon.application.dto.requests.UpdateCartItemQuantityRequest;
+import com.samazon.application.dto.carts.UpdateCartItemQuantityRequest;
 import com.samazon.application.services.CartService;
 
 import jakarta.validation.Valid;
