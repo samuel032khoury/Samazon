@@ -11,9 +11,9 @@ import com.samazon.application.models.Cart;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
-    Optional<Cart> findByUserId(Long userId);
+    public Optional<Cart> findByUserId(Long userId);
 
-    List<Cart> findByCartItemsProductId(Long productId);
+    public List<Cart> findByCartItemsProductId(Long productId);
 
-    List<Cart> findByCartItemsProductCategoryId(Long categoryId);
+    public List<Cart> findByCartItemsProductCategoryId(Long categoryId);
 }

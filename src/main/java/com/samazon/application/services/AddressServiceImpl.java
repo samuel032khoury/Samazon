@@ -20,8 +20,10 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class AddressServiceImpl implements AddressService {
-    private final ModelMapper modelMapper;
+
     private final AddressRepository addressRepository;
+
+    private final ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -37,7 +39,6 @@ public class AddressServiceImpl implements AddressService {
             throw new APIException("Address already exists for this user with the same details");
         }
         Address address = modelMapper.map(request, Address.class);
-        System.out.println("Address: " + address);
         address.setUser(user);
         try {
             Address createdAddress = addressRepository.save(address);

@@ -23,8 +23,11 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+
     private final CartService cartService;
+
     private final CategoryRepository categoryRepository;
+
     private final ModelMapper modelMapper;
 
     @Override

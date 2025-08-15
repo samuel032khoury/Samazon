@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,18 +34,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
     private final CartService cartService;
     private final FileService fileService;
 
     private final AuthUtil authUtil;
-    private final ModelMapper modelMapper;
 
-    @Value("${project.media.upload.dir}")
-    private String mediaUploadDir;
+    private final ModelMapper modelMapper;
 
     @Override
     public ProductResponse addProduct(ProductRequest request) {
@@ -196,7 +193,7 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         checkModificationPermission(product);
         if (image != null && !image.isEmpty()) {
-            String imageUrl = fileService.uploadMedia(mediaUploadDir, image);
+            String imageUrl = fileService.uploadMedia(image);
             product.setImage(imageUrl);
         }
         Product updatedProduct = productRepository.save(product);

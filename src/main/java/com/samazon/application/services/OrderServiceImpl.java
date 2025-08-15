@@ -35,13 +35,16 @@ import lombok.AllArgsConstructor;
 public class OrderServiceImpl implements OrderService {
 
     private final CartService cartService;
-    private final CartRepository cartRepository;
+
     private final AddressRepository addressRepository;
-    private final PaymentRepository paymentRepository;
+    private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final PaymentRepository paymentRepository;
     private final ProductRepository productRepository;
+
     private final AuthUtil authUtil;
+
     private final ModelMapper modelMapper;
 
     @Override

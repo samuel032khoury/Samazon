@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${samazon.app.jwtSecret}")
     private String jwtSecrete;
@@ -36,9 +35,7 @@ public class JwtUtils {
     @Value("${samazon.app.jwtCookieName}")
     private String cookieName;
 
-    private SecretKey key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecrete));
-    }
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     public String getHeaderJWT(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
@@ -110,6 +107,10 @@ public class JwtUtils {
         return ResponseCookie.from(cookieName, "")
                 .path("/api")
                 .build();
+    }
+
+    private SecretKey key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecrete));
     }
 
 }

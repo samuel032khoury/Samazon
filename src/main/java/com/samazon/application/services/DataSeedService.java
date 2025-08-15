@@ -25,17 +25,16 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DataSeedService implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class);
     private static final String SUPER_ADMIN_USERNAME = "superadmin";
     private static final String SUPER_ADMIN_EMAIL = "superadmin@samazon.com";
 
+    private final CartRepository cartRepository;
     private final RoleRepository roleRepository;
-
     private final UserRepository userRepository;
 
-    private final CartRepository cartRepository;
-
     private final PasswordEncoder passwordEncoder;
+
+    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class.getName());
 
     @Transactional
     public void seedData() {
