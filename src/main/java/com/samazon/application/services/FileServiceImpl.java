@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileServiceImpl implements FileService {
 
     @Value("${project.media.upload.dir}")
-    private String uploadDir;
+    private String UPLOAD_DIR;
 
     @Override
     public String uploadMedia(MultipartFile file) throws IOException {
@@ -25,12 +25,12 @@ public class FileServiceImpl implements FileService {
         String randomId = UUID.randomUUID().toString();
         String fileExtension = fileName.substring(fileName.lastIndexOf("."));
         String newFileName = randomId + fileExtension;
-        String fullPath = uploadDir + File.separator + newFileName;
+        String fullPath = UPLOAD_DIR + File.separator + newFileName;
 
-        File folder = new File(uploadDir);
+        File folder = new File(UPLOAD_DIR);
         if (!folder.exists()) {
             if (!folder.mkdirs()) {
-                throw new RuntimeException("Failed to create directory: " + uploadDir);
+                throw new RuntimeException("Failed to create directory: " + UPLOAD_DIR);
             }
         }
         Files.copy(file.getInputStream(), Paths.get(fullPath));
