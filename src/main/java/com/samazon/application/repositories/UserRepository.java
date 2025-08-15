@@ -9,12 +9,13 @@ import com.samazon.application.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    public Optional<User> findByUsername(String username);
 
-    public Optional<User> findByEmail(String email);
+    Boolean existsByEmail(String email);
 
-    public Boolean existsByUsername(String username);
+    Boolean existsByUsername(String username);
 
-    public Boolean existsByEmail(String email);
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByUsername(String username);
 
 }

@@ -10,15 +10,15 @@ import com.samazon.application.models.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    public Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
 
-    public Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageDetails);
+    Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageDetails);
 
-    public boolean existsByCategoryIdAndNameIgnoreCase(Long id, String name);
+    Boolean existsByCategoryIdAndNameIgnoreCase(Long id, String name);
 
-    public Page<Product> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String keyword,
+    Page<Product> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String keyword,
             Pageable pageDetails);
 
-    public boolean existsByCategoryIdAndNameIgnoreCaseAndIdNot(Long id, String name, Long productId);
+    Boolean existsByCategoryIdAndNameIgnoreCaseAndIdNot(Long id, String name, Long productId);
 
 }
