@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.samazon.application.services.UserDetailsImpl;
+import com.samazon.application.services.CustomUserDetails;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -67,7 +67,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public ResponseCookie generateJwtCookieForUser(UserDetailsImpl userDetails) {
+    public ResponseCookie generateJwtCookieForUser(CustomUserDetails userDetails) {
         String jwt = generateJwtTokenForUser(userDetails);
         logger.info("Generated JWT: {}", jwt);
         return ResponseCookie.from(JWT_COOKIE_NAME, jwt)

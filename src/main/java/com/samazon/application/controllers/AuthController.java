@@ -34,7 +34,7 @@ import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 import com.samazon.application.security.jwt.JwtUtils;
 import com.samazon.application.services.CartService;
-import com.samazon.application.services.UserDetailsImpl;
+import com.samazon.application.services.CustomUserDetails;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -57,7 +57,7 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             ResponseCookie jwtCookie = jwtUtils.generateJwtCookieForUser(userDetails);
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
