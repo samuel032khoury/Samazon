@@ -21,10 +21,10 @@ import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DataSeedService implements CommandLineRunner {
 
     @Value("${samazon.app.super.password}")
