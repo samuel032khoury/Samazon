@@ -1,4 +1,4 @@
-package com.samazon.application.services;
+package com.samazon.application.security.services;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

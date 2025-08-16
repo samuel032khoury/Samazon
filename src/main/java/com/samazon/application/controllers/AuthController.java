@@ -33,8 +33,8 @@ import com.samazon.application.models.User;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 import com.samazon.application.security.jwt.JwtUtils;
+import com.samazon.application.security.services.CustomUserDetails;
 import com.samazon.application.services.CartService;
-import com.samazon.application.services.CustomUserDetails;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

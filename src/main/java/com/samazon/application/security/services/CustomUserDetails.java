@@ -1,4 +1,4 @@
-package com.samazon.application.services;
+package com.samazon.application.security.services;
 
 import java.util.Collection;
 import java.util.List;
