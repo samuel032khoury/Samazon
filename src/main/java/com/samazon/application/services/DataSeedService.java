@@ -42,7 +42,7 @@ public class DataSeedService implements CommandLineRunner {
 
     private final PasswordEncoder passwordEncoder;
 
-    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class);
 
     @Transactional
     public void seedData() {
