@@ -7,5 +7,7 @@ import com.samazon.application.models.Category;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    boolean existsByCategoryName(String categoryName);
+
+    Boolean existsByCategoryName(String categoryName);
+
 }

@@ -8,9 +8,11 @@ import com.samazon.application.models.Address;
 import com.samazon.application.models.User;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    List<Address> findByUser(User user);
 
-    boolean existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCodeAndIdNot(Long userId,
+    Boolean existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCodeAndIdNot(Long userId,
             String building,
             String street, String city, String state, String country, String zipCode, Long id);
+
+    List<Address> findByUser(User user);
+
 }

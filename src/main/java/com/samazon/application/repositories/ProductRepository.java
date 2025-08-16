@@ -14,10 +14,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageDetails);
 
-    boolean existsByCategoryIdAndNameIgnoreCase(Long id, String name);
+    Boolean existsByCategoryIdAndNameIgnoreCase(Long id, String name);
 
-    Page<Product> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String keyword, Pageable pageDetails);
+    Page<Product> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String keyword,
+            Pageable pageDetails);
 
-    boolean existsByCategoryIdAndNameIgnoreCaseAndIdNot(Long id, String name, Long productId);
+    Boolean existsByCategoryIdAndNameIgnoreCaseAndIdNot(Long id, String name, Long productId);
 
 }

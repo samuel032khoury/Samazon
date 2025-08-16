@@ -9,9 +9,11 @@ import com.samazon.application.models.CartItem;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-    public Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
 
-    public Optional<CartItem> findByProductIdAndCartUserId(Long productId, Long userId);
+    Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
 
-    public void deleteAllByProductId(Long productId);
+    Optional<CartItem> findByProductIdAndCartUserId(Long productId, Long userId);
+
+    void deleteAllByProductId(Long productId);
+
 }

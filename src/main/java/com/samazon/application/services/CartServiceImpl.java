@@ -25,9 +25,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CartServiceImpl implements CartService {
 
-    private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
     private final AuthUtil authUtil;
 

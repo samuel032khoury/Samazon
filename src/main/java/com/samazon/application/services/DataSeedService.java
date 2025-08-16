@@ -2,10 +2,12 @@ package com.samazon.application.services;
 
 import java.security.SecureRandom;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,23 +21,28 @@ import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DataSeedService implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class);
-    private static final String SUPER_ADMIN_USERNAME = "superadmin";
-    private static final String SUPER_ADMIN_EMAIL = "superadmin@samazon.com";
+    @Value("${samazon.app.super.password}")
+    private String SUPER_CUSTOM_PASSWORD;
 
-    private final RoleRepository roleRepository;
+    @Value("${samazon.app.super.email}")
+    private String SUPER_EMAIL;
 
-    private final UserRepository userRepository;
+    @Value("${samazon.app.super.username}")
+    private String SUPER_USERNAME;
 
     private final CartRepository cartRepository;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class);
 
     @Transactional
     public void seedData() {
@@ -70,15 +77,17 @@ public class DataSeedService implements CommandLineRunner {
 
     private void seedSuperAdmin() {
         // Check if super admin already exists
-        if (userRepository.findByUsername(SUPER_ADMIN_USERNAME).isPresent()) {
+        if (userRepository.findByUsername(SUPER_USERNAME).isPresent()) {
             logger.info("Super admin already exists. Skipping super admin creation.");
             return;
         }
 
         logger.info("Creating super admin user...");
 
-        // Generate a secure random password
-        String password = generateSecurePassword();
+        // Generate a secure random password if not provided
+        String password = Optional.ofNullable(SUPER_CUSTOM_PASSWORD)
+                .filter(p -> !p.isEmpty())
+                .orElseGet(this::generateSecurePassword);
 
         // Get super admin role
         Role superAdminRole = roleRepository.findByRoleType(RoleType.ROLE_SUPER_ADMIN)
@@ -86,8 +95,8 @@ public class DataSeedService implements CommandLineRunner {
 
         // Create super admin user
         User superAdmin = new User();
-        superAdmin.setUsername(SUPER_ADMIN_USERNAME);
-        superAdmin.setEmail(SUPER_ADMIN_EMAIL);
+        superAdmin.setUsername(SUPER_USERNAME);
+        superAdmin.setEmail(SUPER_EMAIL);
         superAdmin.setPassword(passwordEncoder.encode(password));
 
         Set<Role> roles = new HashSet<>();
@@ -103,9 +112,9 @@ public class DataSeedService implements CommandLineRunner {
         // Log credentials ONLY on first creation
         logger.warn("========================================");
         logger.warn("SUPER ADMIN CREDENTIALS (SAVE THESE!)");
-        logger.warn("Username: {}", SUPER_ADMIN_USERNAME);
+        logger.warn("Username: {}", SUPER_USERNAME);
         logger.warn("Password: {}", password);
-        logger.warn("Email: {}", SUPER_ADMIN_EMAIL);
+        logger.warn("Email: {}", SUPER_EMAIL);
         logger.warn("========================================");
         logger.warn("IMPORTANT: These credentials will NOT be shown again!");
         logger.warn("========================================");

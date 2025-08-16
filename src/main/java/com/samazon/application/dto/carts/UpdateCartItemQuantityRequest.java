@@ -1,4 +1,4 @@
-package com.samazon.application.dto.requests;
+package com.samazon.application.dto.carts;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

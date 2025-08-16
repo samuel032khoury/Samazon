@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.samazon.application.services.UserDetailsImpl;
+import com.samazon.application.services.CustomUserDetails;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -25,20 +25,17 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${samazon.app.jwtSecret}")
-    private String jwtSecrete;
+    private String JWT_SECRETE;
 
     @Value("${samazon.app.jwtExpirationMs}")
-    private int jwtExpirationMs;
+    private int JWT_EXPIRATION_MS;
 
     @Value("${samazon.app.jwtCookieName}")
-    private String cookieName;
+    private String JWT_COOKIE_NAME;
 
-    private SecretKey key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecrete));
-    }
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     public String getHeaderJWT(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
@@ -50,7 +47,7 @@ public class JwtUtils {
     }
 
     public String getCookieJWT(HttpServletRequest request) {
-        Cookie cookie = WebUtils.getCookie(request, cookieName);
+        Cookie cookie = WebUtils.getCookie(request, JWT_COOKIE_NAME);
         if (cookie != null) {
             logger.info("JWT Cookie found: {}", cookie.getValue());
             return cookie.getValue();
@@ -65,19 +62,19 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .expiration(new Date((new Date()).getTime() + JWT_EXPIRATION_MS))
                 .signWith(key())
                 .compact();
     }
 
-    public ResponseCookie generateJwtCookieForUser(UserDetailsImpl userDetails) {
+    public ResponseCookie generateJwtCookieForUser(CustomUserDetails userDetails) {
         String jwt = generateJwtTokenForUser(userDetails);
         logger.info("Generated JWT: {}", jwt);
-        return ResponseCookie.from(cookieName, jwt)
+        return ResponseCookie.from(JWT_COOKIE_NAME, jwt)
                 .httpOnly(true)
                 .secure(true)
                 .path("/api")
-                .maxAge(jwtExpirationMs / 1000)
+                .maxAge(JWT_EXPIRATION_MS / 1000)
                 .build();
     }
 
@@ -107,9 +104,13 @@ public class JwtUtils {
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        return ResponseCookie.from(cookieName, "")
+        return ResponseCookie.from(JWT_COOKIE_NAME, "")
                 .path("/api")
                 .build();
+    }
+
+    private SecretKey key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(JWT_SECRETE));
     }
 
 }

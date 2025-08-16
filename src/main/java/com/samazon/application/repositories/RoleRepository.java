@@ -10,7 +10,9 @@ import com.samazon.application.models.RoleType;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    boolean existsByRoleType(String name);
+
+    Boolean existsByRoleType(String name);
 
     Optional<Role> findByRoleType(RoleType roleType);
+
 }

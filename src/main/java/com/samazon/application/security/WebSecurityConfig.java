@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.samazon.application.security.jwt.AuthEntryPointJwt;
 import com.samazon.application.security.jwt.AuthTokenFilter;
-import com.samazon.application.services.UserDetailsServiceImpl;
 
 import lombok.AllArgsConstructor;
 
@@ -27,7 +27,9 @@ import lombok.AllArgsConstructor;
 @EnableMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
 public class WebSecurityConfig {
-    private final UserDetailsServiceImpl userDetailsService;
+
+    private final UserDetailsService userDetailsService;
+
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authTokenFilter;
 
@@ -68,4 +70,5 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(SecurityEndpointsConfig.SWAGGER_ENDPOINTS);
     }
+
 }
