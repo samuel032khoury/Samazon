@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,6 +35,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
     private String password;
     private String email;
@@ -52,18 +51,15 @@ public class User {
     private Cart cart;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
     @ToString.Exclude
     private final List<Address> addresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
     @ToString.Exclude
     private Set<Product> products = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = { CascadeType.PERSIST,
             CascadeType.MERGE }, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
     @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
 }

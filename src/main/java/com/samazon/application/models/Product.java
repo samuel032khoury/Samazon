@@ -3,9 +3,6 @@ package com.samazon.application.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +29,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String description;
     private String image;
@@ -42,23 +40,19 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    @JsonBackReference
     @ToString.Exclude
     private Category category;
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
-    @JsonBackReference
     @ToString.Exclude
     private User seller;
 
     @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JsonManagedReference
     @ToString.Exclude
     private final List<CartItem> cartItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JsonManagedReference
     @ToString.Exclude
     private final List<OrderItem> orderItems = new ArrayList<>();
 }
