@@ -1,5 +1,6 @@
 package com.samazon.application.services;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -54,7 +55,14 @@ public class CategoryServiceImpl implements CategoryService {
         Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
         List<Category> categories = categoryPage.getContent();
         if (categories.isEmpty()) {
-            throw new APIException("No more categories available!");
+            return new PagedResponse<>(
+                Collections.emptyList(),
+                categoryPage.getNumber(),
+                categoryPage.getSize(),
+                categoryPage.getTotalElements(),
+                categoryPage.getTotalPages(),
+                categoryPage.isLast()
+            );
         }
         List<CategoryResponse> responses = categories.stream()
                 .map(category -> modelMapper.map(category, CategoryResponse.class))
