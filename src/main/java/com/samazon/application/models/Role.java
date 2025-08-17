@@ -21,7 +21,6 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ToString.Exclude
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 }

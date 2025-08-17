@@ -1,6 +1,5 @@
 package com.samazon.application.models;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,7 +30,7 @@ public class Payment {
     private String paymentGatewayStatus;
     private String paymentGatewayResponse;
 
-    @OneToOne(mappedBy = "payment", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToOne(mappedBy = "payment", optional = false)
     @ToString.Exclude
     private Order order;
 }
