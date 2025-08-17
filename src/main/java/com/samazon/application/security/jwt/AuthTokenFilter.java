@@ -1,7 +1,6 @@
 package com.samazon.application.security.jwt;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.samazon.application.security.SecurityEndpointsConfig;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,15 +35,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-
-
-        String uri = request.getRequestURI();
-        
-        if (isPublicEndpoint(uri)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         logger.info("Authentication filter invoked for request: {}", request.getRequestURI());
         try {
             String jwt = jwtUtils.getCookieJWT(request);
@@ -67,8 +54,4 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean isPublicEndpoint(String uri) {
-        return Arrays.stream(SecurityEndpointsConfig.PUBLIC_ENDPOINTS)
-            .anyMatch(pattern -> new AntPathMatcher().match(pattern, uri));
-    }
 }
