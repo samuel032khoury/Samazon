@@ -7,7 +7,8 @@ public class SecurityEndpointsConfig {
 
     public static final String[] PUBLIC_ENDPOINTS = {
             "/error",
-            "/api/auth/**",
+            "/api/auth/signin",
+            "/api/auth/signup",
             "/api/public/**",
             "/api/test/**",
             "/h2-console/**",
