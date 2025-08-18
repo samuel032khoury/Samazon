@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,9 +20,11 @@ import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DataSeedService implements CommandLineRunner {
 
     @Value("${samazon.app.super.password}")
@@ -42,11 +42,9 @@ public class DataSeedService implements CommandLineRunner {
 
     private final PasswordEncoder passwordEncoder;
 
-    private static final Logger logger = LoggerFactory.getLogger(DataSeedService.class);
-
     @Transactional
     public void seedData() {
-        logger.info("Starting data seeding process...");
+        log.info("Starting data seeding process...");
 
         // Seed roles first
         seedRoles();
@@ -54,11 +52,11 @@ public class DataSeedService implements CommandLineRunner {
         // Then seed super admin
         seedSuperAdmin();
 
-        logger.info("Data seeding process completed successfully");
+        log.info("Data seeding process completed successfully");
     }
 
     private void seedRoles() {
-        logger.debug("Seeding roles...");
+        log.debug("Seeding roles...");
 
         // Create all role types
         for (RoleType roleType : RoleType.values()) {
@@ -67,22 +65,22 @@ public class DataSeedService implements CommandLineRunner {
                         Role newRole = new Role();
                         newRole.setRoleType(roleType);
                         Role savedRole = roleRepository.save(newRole);
-                        logger.debug("Created role: {}", roleType);
+                        log.debug("Created role: {}", roleType);
                         return savedRole;
                     });
         }
 
-        logger.info("All roles have been seeded successfully");
+        log.info("All roles have been seeded successfully");
     }
 
     private void seedSuperAdmin() {
         // Check if super admin already exists
         if (userRepository.findByUsername(SUPER_USERNAME).isPresent()) {
-            logger.info("Super admin already exists. Skipping super admin creation.");
+            log.info("Super admin already exists. Skipping super admin creation.");
             return;
         }
 
-        logger.info("Creating super admin user...");
+        log.info("Creating super admin user...");
 
         // Generate a secure random password if not provided
         String password = Optional.ofNullable(SUPER_CUSTOM_PASSWORD)
@@ -110,16 +108,16 @@ public class DataSeedService implements CommandLineRunner {
         cartRepository.save(superAdminCart);
 
         // Log credentials ONLY on first creation
-        logger.warn("========================================");
-        logger.warn("SUPER ADMIN CREDENTIALS (SAVE THESE!)");
-        logger.warn("Username: {}", SUPER_USERNAME);
-        logger.warn("Password: {}", password);
-        logger.warn("Email: {}", SUPER_EMAIL);
-        logger.warn("========================================");
-        logger.warn("IMPORTANT: These credentials will NOT be shown again!");
-        logger.warn("========================================");
+        log.warn("========================================");
+        log.warn("SUPER ADMIN CREDENTIALS (SAVE THESE!)");
+        log.warn("Username: {}", SUPER_USERNAME);
+        log.warn("Password: {}", password);
+        log.warn("Email: {}", SUPER_EMAIL);
+        log.warn("========================================");
+        log.warn("IMPORTANT: These credentials will NOT be shown again!");
+        log.warn("========================================");
 
-        logger.info("Super admin user created successfully");
+        log.info("Super admin user created successfully");
     }
 
     private String generateSecurePassword() {
