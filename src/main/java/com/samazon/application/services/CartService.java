@@ -21,5 +21,5 @@ public interface CartService {
 
     void recalculateCartTotal(Long cartId);
 
-    void clearCart(Long id);
+    void clearCart(Long cartId);
 }

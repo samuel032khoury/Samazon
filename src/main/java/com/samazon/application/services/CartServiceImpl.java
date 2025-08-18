@@ -149,9 +149,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void clearCart(Long id) {
-        Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", id));
+    public void clearCart(Long cartId) {
+        Cart cart = cartRepository.findById(
+                cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
         cart.getCartItems().forEach(cartItem -> {
             cartItem.getProduct().getCartItems().remove(cartItem);
             cartItemRepository.delete(cartItem);
