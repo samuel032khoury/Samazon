@@ -76,6 +76,18 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public List<Long> getAllCartIdsWithCategory(Long categoryId) {
+        return cartRepository.findByCartItemsProductCategoryId(categoryId)
+                .stream().map(Cart::getId).toList();
+    }
+
+    @Override
+    public List<Long> getAllCartIdsWithProduct(Long productId) {
+        return cartRepository.findByCartItemsProductId(productId)
+                .stream().map(Cart::getId).toList();
+    }
+
+    @Override
     public CartResponse getCurrentUserCart() {
         Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
                 .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
@@ -119,18 +131,6 @@ public class CartServiceImpl implements CartService {
 
         removeCartItem(cart, cartItem);
         updateCartTotal(cart);
-    }
-
-    @Override
-    public List<Long> getAllCartIdsWithProduct(Long productId) {
-        return cartRepository.findByCartItemsProductId(productId)
-                .stream().map(Cart::getId).toList();
-    }
-
-    @Override
-    public List<Long> getAllCartIdsWithCategory(Long categoryId) {
-        return cartRepository.findByCartItemsProductCategoryId(categoryId)
-                .stream().map(Cart::getId).toList();
     }
 
     @Override

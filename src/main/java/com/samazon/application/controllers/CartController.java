@@ -27,26 +27,26 @@ public class CartController {
 
     private final CartService cartService;
 
-    @GetMapping("/admin/cart-audit")
-    public ResponseEntity<List<CartResponse>> getAllCarts() {
-        List<CartResponse> responses = cartService.getAllCarts();
-        return ResponseEntity.ok(responses);
-    }
-
-    @PostMapping("/user/cart")
+    @PostMapping("/user/carts")
     public ResponseEntity<CartResponse> addToCart(@Valid @RequestBody CartItemRequest request) {
         CartResponse response = cartService.addProductToCart(request.getProductId(),
                 request.getQuantity());
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/user/cart")
+    @GetMapping("/admin/audit/carts")
+    public ResponseEntity<List<CartResponse>> getAllCarts() {
+        List<CartResponse> responses = cartService.getAllCarts();
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/user/carts")
     public ResponseEntity<CartResponse> getCurrentUserCart() {
         CartResponse response = cartService.getCurrentUserCart();
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/user/cart/item")
+    @PatchMapping("/user/carts/item")
     public ResponseEntity<CartResponse> updateCartItemQuantity(@RequestParam Long productId,
             @Valid @RequestBody CartItemUpdateQuantityRequest request) {
         CartResponse response = cartService.updateCartItemQuantity(productId, request.getQuantity(),
@@ -54,7 +54,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/user/cart/item")
+    @DeleteMapping("/user/carts/item")
     public ResponseEntity<Void> removeCartItem(@RequestParam Long productId) {
         cartService.removeCartItem(productId);
         return ResponseEntity.noContent().build();

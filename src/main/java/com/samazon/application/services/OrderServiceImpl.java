@@ -127,4 +127,52 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    @Override
+    public List<OrderResponse> getAllOrders() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllOrders'");
+    }
+
+    @Override
+    public List<OrderResponse> getOrdersByUserId(Long userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOrdersByUserId'");
+    }
+
+    @Override
+    public List<OrderResponse> getOrdersBySellerId(Long sellerId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOrdersBySellerId'");
+    }
+
+    @Override
+    public OrderResponse getOrderById(Long orderId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getOrderById'");
+    }
+
+    @Override
+    public OrderResponse updateOrderStatus(Long orderId, String status) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateOrderStatus'");
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'cancelOrder'");
+    }
+
+    @Override
+    public void refundOrder(Long orderId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'refundOrder'");
+    }
+
+    @Override
+    public void deleteOrder(Long orderId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteOrder'");
+    }
+
 }

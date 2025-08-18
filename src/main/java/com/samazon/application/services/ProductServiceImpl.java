@@ -73,13 +73,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProductById(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        return modelMapper.map(product, ProductResponse.class);
-    }
-
-    @Override
     public PagedResponse<ProductResponse> getProducts(Long categoryId, String keyword, Integer page, Integer size,
             String sortBy, String sortOrder) {
         if (page < 0 || size <= 0) {
@@ -110,6 +103,13 @@ public class ProductServiceImpl implements ProductService {
                 .totalPages(productPage.getTotalPages())
                 .lastPage(productPage.isLast())
                 .build();
+    }
+
+    @Override
+    public ProductResponse getProductById(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        return modelMapper.map(product, ProductResponse.class);
     }
 
     @Override

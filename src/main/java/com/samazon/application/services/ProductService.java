@@ -12,10 +12,10 @@ public interface ProductService {
 
     ProductResponse addProduct(ProductRequest request);
 
-    ProductResponse getProductById(Long productId);
-
     PagedResponse<ProductResponse> getProducts(Long categoryId, String keyword, Integer page, Integer size,
             String sortBy, String sortOrder);
+
+    ProductResponse getProductById(Long productId);
 
     ProductResponse patchProduct(Long productId, ProductRequest productRequest);
 

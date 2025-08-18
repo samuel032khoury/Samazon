@@ -39,7 +39,7 @@ public class AddressController {
         return new ResponseEntity<>(createdAddressResponse, HttpStatus.CREATED);
     }
 
-    @GetMapping("/admin/address-audit")
+    @GetMapping("/admin/audit/addresses")
     public ResponseEntity<List<AddressResponse>> getAllAddresses() {
         List<AddressResponse> allAddressesResponse = addressService.getAllAddresses();
         return new ResponseEntity<>(allAddressesResponse, HttpStatus.OK);
