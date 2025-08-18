@@ -18,13 +18,13 @@ public class SecurityEndpointsConfig {
             "/media/**"
     };
 
-        public static final String[] SWAGGER_ENDPOINTS = {
-                        "/v2/api-docs",
-                        "/swagger-resources/**",
-                        "/swagger-ui.html",
-                        "/webjars/**",
-                        "/configuration/ui",
-                        "/configuration/security"
-        };
+    public static final String[] SWAGGER_ENDPOINTS = {
+            "/v2/api-docs",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/configuration/ui",
+            "/configuration/security"
+    };
 
 }
