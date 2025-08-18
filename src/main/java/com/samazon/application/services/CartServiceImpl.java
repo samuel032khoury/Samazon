@@ -7,7 +7,6 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.samazon.application.dto.carts.CartItemResponse;
 import com.samazon.application.dto.carts.CartResponse;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
@@ -37,7 +36,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse addProductToCart(Long productId, Integer quantity) {
         // Find existing cart or create a new one
-        Cart cart = _getCurrentUserCart();
+        Cart cart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
+                .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
 
         // Retrieve Product Details
         Product product = productRepository.findById(productId)
@@ -62,24 +62,24 @@ public class CartServiceImpl implements CartService {
 
         cart.getCartItems().add(cartItem);
 
-        updateProductStock(product);
         Cart updatedCart = updateCartTotal(cart);
 
-        return mapCartToDTO(updatedCart);
+        return modelMapper.map(updatedCart, CartResponse.class);
     }
 
     @Override
     public List<CartResponse> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
         return carts.stream()
-                .map(this::mapCartToDTO)
+                .map(cart -> modelMapper.map(cart, CartResponse.class))
                 .toList();
     }
 
     @Override
     public CartResponse getCurrentUserCart() {
-        Cart userCart = _getCurrentUserCart();
-        return mapCartToDTO(userCart);
+        Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
+                .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
+        return modelMapper.map(userCart, CartResponse.class);
     }
 
     @Override
@@ -102,9 +102,8 @@ public class CartServiceImpl implements CartService {
             cartItem.setQuantity(newQuantity);
             cartItemRepository.save(cartItem);
         }
-        updateProductStock(product);
         Cart updatedCart = updateCartTotal(cart);
-        return mapCartToDTO(updatedCart);
+        return modelMapper.map(updatedCart, CartResponse.class);
     }
 
     @Override
@@ -119,7 +118,6 @@ public class CartServiceImpl implements CartService {
                         productId + " and " + userId));
 
         removeCartItem(cart, cartItem);
-        updateProductStock(cartItem.getProduct());
         updateCartTotal(cart);
     }
 
@@ -188,11 +186,6 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.delete(cartItem);
     }
 
-    private Product updateProductStock(Product product) {
-        product.setStock(product.getStock());
-        return productRepository.save(product);
-    }
-
     private Cart updateCartTotal(Cart cart) {
         cart.getCartItems().removeIf(ci -> ci.getProduct() == null);
 
@@ -206,19 +199,5 @@ public class CartServiceImpl implements CartService {
                 .sum();
         cart.setTotalAmount(BigDecimal.valueOf(totalAmount).setScale(2, RoundingMode.HALF_UP));
         return cartRepository.save(cart);
-    }
-
-    private Cart _getCurrentUserCart() {
-        Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
-                .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
-        return userCart;
-    }
-
-    private CartResponse mapCartToDTO(Cart cart) {
-        CartResponse response = modelMapper.map(cart, CartResponse.class);
-        response.setCartItems(cart.getCartItems().stream()
-                .map(cartItem -> modelMapper.map(cartItem, CartItemResponse.class))
-                .toList());
-        return response;
     }
 }

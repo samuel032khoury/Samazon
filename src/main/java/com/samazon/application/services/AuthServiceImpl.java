@@ -26,6 +26,7 @@ import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
 import com.samazon.application.security.services.CustomUserDetails;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -54,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public UserInfoResponse register(SignUpRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new APIException("Error: Username is already taken!");

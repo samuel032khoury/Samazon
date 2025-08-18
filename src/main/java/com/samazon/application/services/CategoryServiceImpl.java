@@ -56,13 +56,12 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories = categoryPage.getContent();
         if (categories.isEmpty()) {
             return new PagedResponse<>(
-                Collections.emptyList(),
-                categoryPage.getNumber(),
-                categoryPage.getSize(),
-                categoryPage.getTotalElements(),
-                categoryPage.getTotalPages(),
-                categoryPage.isLast()
-            );
+                    Collections.emptyList(),
+                    categoryPage.getNumber(),
+                    categoryPage.getSize(),
+                    categoryPage.getTotalElements(),
+                    categoryPage.getTotalPages(),
+                    categoryPage.isLast());
         }
         List<CategoryResponse> responses = categories.stream()
                 .map(category -> modelMapper.map(category, CategoryResponse.class))
@@ -97,6 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         List<Long> cartIds = cartService.getAllCartIdsWithCategory(categoryId);
         categoryRepository.deleteById(categoryId);
+        // TODO: use event publisher to recalculate cart totals asynchronously
         cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
         return null;
     }
