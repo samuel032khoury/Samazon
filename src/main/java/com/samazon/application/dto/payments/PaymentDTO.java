@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.payments;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

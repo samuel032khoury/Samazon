@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 
-import com.samazon.application.dto.OrderItemResponse;
 import com.samazon.application.models.Order;
 
 import lombok.AllArgsConstructor;

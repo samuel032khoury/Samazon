@@ -1,4 +1,4 @@
-package com.samazon.application.dto;
+package com.samazon.application.dto.orders;
 
 import com.samazon.application.models.Product;
 
