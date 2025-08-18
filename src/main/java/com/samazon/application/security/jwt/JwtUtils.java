@@ -6,11 +6,8 @@ import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
-
-import com.samazon.application.security.services.CustomUserDetails;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -55,8 +52,7 @@ public class JwtUtils {
         return null;
     }
 
-    public String generateJwtTokenForUser(UserDetails userDetails) {
-        String username = userDetails.getUsername();
+    public String generateJwtTokenForUser(String username) {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
@@ -65,8 +61,8 @@ public class JwtUtils {
                 .compact();
     }
 
-    public ResponseCookie generateJwtCookieForUser(CustomUserDetails userDetails) {
-        String jwt = generateJwtTokenForUser(userDetails);
+    public ResponseCookie generateJwtCookieForUser(String username) {
+        String jwt = generateJwtTokenForUser(username);
         log.info("Generated JWT: {}", jwt);
         return ResponseCookie.from(JWT_COOKIE_NAME, jwt)
                 .httpOnly(true)

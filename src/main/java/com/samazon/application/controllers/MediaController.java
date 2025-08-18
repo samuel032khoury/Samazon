@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class MediaController {
+
     private final FileService fileService;
 
     @PostMapping("/media")
@@ -25,4 +26,5 @@ public class MediaController {
         String fileName = fileService.uploadMedia(file);
         return ResponseEntity.ok(new APIResponse("File " + fileName + " uploaded successfully", true));
     }
+
 }

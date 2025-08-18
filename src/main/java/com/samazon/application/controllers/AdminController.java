@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @PreAuthorize("hasRole('SUPER_ADMIN')")
 public class AdminController {
+
     private final AccessControlService accessControlService;
 
     @PostMapping("/assign-admin/{userId}")
@@ -30,4 +31,5 @@ public class AdminController {
         accessControlService.revokeAdminRole(userId);
         return ResponseEntity.ok(new APIResponse("Admin role revoked successfully", true));
     }
+
 }

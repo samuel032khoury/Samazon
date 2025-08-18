@@ -26,8 +26,10 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api")
 @AllArgsConstructor
 public class AddressController {
-    private final AuthUtil authUtil;
+
     private final AddressService addressService;
+
+    private final AuthUtil authUtil;
 
     @PostMapping("/user/addresses")
     public ResponseEntity<AddressResponse> createAddress(

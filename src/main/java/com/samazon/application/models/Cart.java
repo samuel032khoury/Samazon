@@ -42,4 +42,8 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @ToString.Exclude
     private final List<CartItem> cartItems = new ArrayList<>();
+
+    public Cart(User user) {
+        this.user = user;
+    }
 }

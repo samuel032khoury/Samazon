@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api")
 @AllArgsConstructor
 public class CartController {
+
     private final CartService cartService;
 
     @GetMapping("/admin/cart-audit")
@@ -58,4 +59,5 @@ public class CartController {
         cartService.removeCartItem(productId);
         return ResponseEntity.noContent().build();
     }
+
 }

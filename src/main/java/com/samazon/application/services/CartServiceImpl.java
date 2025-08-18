@@ -14,7 +14,6 @@ import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
 import com.samazon.application.models.CartItem;
 import com.samazon.application.models.Product;
-import com.samazon.application.models.User;
 import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.ProductRepository;
@@ -159,16 +158,6 @@ public class CartServiceImpl implements CartService {
         });
         cart.getCartItems().clear();
         cart.setTotalAmount(BigDecimal.ZERO);
-        cartRepository.save(cart);
-    }
-
-    @Override
-    @Transactional
-    public void createCartForUser(User newUser) {
-        Cart cart = new Cart();
-        cart.setUser(newUser);
-        cart.setTotalAmount(BigDecimal.ZERO);
-        newUser.setCart(cart);
         cartRepository.save(cart);
     }
 
