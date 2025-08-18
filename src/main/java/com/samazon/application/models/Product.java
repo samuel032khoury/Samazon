@@ -51,8 +51,4 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @ToString.Exclude
     private final List<CartItem> cartItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @ToString.Exclude
-    private final List<OrderItem> orderItems = new ArrayList<>();
 }

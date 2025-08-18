@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.orders.OrderRequest;
-import com.samazon.application.dto.orders.OrderDTO;
+import com.samazon.application.dto.orders.OrderResponse;
 import com.samazon.application.services.OrderService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -21,8 +22,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/order")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderRequest request) {
-        OrderDTO orderDTO = orderService.placeOrder(request);
-        return new ResponseEntity<>(orderDTO, HttpStatus.CREATED);
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
+        OrderResponse response = orderService.createOrder(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

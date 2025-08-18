@@ -27,13 +27,13 @@ public class OrderItem {
     private Long id;
 
     private Integer quantity;
+    private Double unitPriceAtOrder;
     private Double discount;
-    private Double priceAtOrder; // display as the original price when made the order
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    @ToString.Exclude
-    private Product product;
+    private Long productId;
+    private String productName;
+    private String productImage;
+    private Long sellerId;
+    private String sellerName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")

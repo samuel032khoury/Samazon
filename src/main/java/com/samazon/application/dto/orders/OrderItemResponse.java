@@ -1,19 +1,22 @@
 package com.samazon.application.dto.orders;
 
-import com.samazon.application.models.Product;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderItemResponse {
     private Long id;
-    private Long productId;
-    private Product product;
     private Integer quantity;
+    private Double unitPriceAtOrder;
     private Double discount;
-    private Double priceAtOrder;
+    private Long productId;
+    private String productName;
+    private String productImage;
+    private Long sellerId;
+    private String sellerName;
 }
