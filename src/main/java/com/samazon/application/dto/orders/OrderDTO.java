@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 
-import com.samazon.application.dto.OrderItemDTO;
+import com.samazon.application.dto.OrderItemResponse;
 import com.samazon.application.models.Order;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class OrderDTO {
     private Long id;
     private Long userId;
-    private List<OrderItemDTO> orderItems;
+    private List<OrderItemResponse> orderItems;
     private LocalDate orderDate;
     private Long paymentId;
     private Double totalAmount;

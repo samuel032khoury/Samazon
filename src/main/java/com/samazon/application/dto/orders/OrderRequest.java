@@ -1,5 +1,6 @@
 package com.samazon.application.dto.orders;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
+    @NotNull
     private Long addressId;
     private String paymentMethod;
     private String paymentGatewayProvider;

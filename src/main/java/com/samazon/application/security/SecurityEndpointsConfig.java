@@ -7,8 +7,8 @@ public class SecurityEndpointsConfig {
 
     public static final String[] PUBLIC_ENDPOINTS = {
             "/error",
-            "/api/auth/signin",
             "/api/auth/signup",
+            "/api/auth/signin",
             "/api/public/**",
             "/api/test/**",
             "/h2-console/**",
@@ -18,13 +18,13 @@ public class SecurityEndpointsConfig {
             "/media/**"
     };
 
-    public static final String[] SWAGGER_ENDPOINTS = {
-            "/v2/api-docs",
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/webjars/**",
-            "/configuration/ui",
-            "/configuration/security"
-    };
+        public static final String[] SWAGGER_ENDPOINTS = {
+                        "/v2/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/webjars/**",
+                        "/configuration/ui",
+                        "/configuration/security"
+        };
 
 }

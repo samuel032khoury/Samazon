@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.carts.CartItemRequest;
 import com.samazon.application.dto.carts.CartResponse;
-import com.samazon.application.dto.carts.UpdateCartItemQuantityRequest;
+import com.samazon.application.dto.carts.CartItemUpdateQuantityRequest;
 import com.samazon.application.services.CartService;
 
 import jakarta.validation.Valid;
@@ -47,7 +47,7 @@ public class CartController {
 
     @PatchMapping("/user/cart/item")
     public ResponseEntity<CartResponse> updateCartItemQuantity(@RequestParam Long productId,
-            @Valid @RequestBody UpdateCartItemQuantityRequest request) {
+            @Valid @RequestBody CartItemUpdateQuantityRequest request) {
         CartResponse response = cartService.updateCartItemQuantity(productId, request.getQuantity(),
                 request.getAction());
         return ResponseEntity.ok(response);
