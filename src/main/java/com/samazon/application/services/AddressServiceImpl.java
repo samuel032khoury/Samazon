@@ -32,9 +32,10 @@ public class AddressServiceImpl implements AddressService {
             throw new APIException("User must be persisted before adding an address");
         }
         boolean exists = addressRepository
-                .existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCodeAndIdNot(
-                        user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
-                        request.getCountry(), request.getZipCode(), null);
+                .existsByUserIdAndFullNameAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
+                        user.getId(), request.getFullName(), request.getAddressLine1(),
+                        request.getAddressLine2(), request.getCity(), request.getState(), request.getPostalCode(),
+                        request.getCountry(), null);
         if (exists) {
             throw new APIException("Address already exists for this user with the same details");
         }
@@ -81,9 +82,11 @@ public class AddressServiceImpl implements AddressService {
         if (!address.getUser().equals(user)) {
             throw new AccessDeniedException("You do not have permission to update this address");
         }
-        if (addressRepository.existsByUserIdAndBuildingAndStreetAndCityAndStateAndCountryAndZipCodeAndIdNot(
-                user.getId(), request.getBuilding(), request.getStreet(), request.getCity(), request.getState(),
-                request.getCountry(), request.getZipCode(), addressId)) {
+        if (addressRepository
+                .existsByUserIdAndFullNameAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
+                        user.getId(), request.getFullName(), request.getAddressLine1(),
+                        request.getAddressLine2(), request.getCity(), request.getState(), request.getPostalCode(),
+                        request.getCountry(), addressId)) {
             throw new APIException("Address already exists for this user with the same details");
         }
         modelMapper.map(request, address);

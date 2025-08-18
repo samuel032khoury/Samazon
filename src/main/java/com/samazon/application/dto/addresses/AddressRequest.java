@@ -11,11 +11,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddressRequest {
     @NotBlank
-    @Size(min = 5, message = "Building must be at least 5 characters long")
-    private String building;
+    @Size(min = 3, message = "Full name must be at least 3 characters long")
+    private String fullName;
     @NotBlank
-    @Size(min = 5, message = "Street must be at least 5 characters long")
-    private String street;
+    @Size(min = 5, message = "Address Line 1 must be at least 5 characters long")
+    private String addressLine1;
+    @NotBlank
+    @Size(min = 5, message = "Address Line 2 must be at least 5 characters long")
+    private String addressLine2;
     @NotBlank
     @Size(min = 4, message = "City must be at least 4 characters long")
     private String city;
@@ -23,9 +26,12 @@ public class AddressRequest {
     @Size(min = 2, message = "State must be at least 2 characters long")
     private String state;
     @NotBlank
+    @Size(min = 5, message = "Postal code must be at least 5 characters long")
+    private String postalCode;
+    @NotBlank
     @Size(min = 2, message = "Country must be at least 2 characters long")
     private String country;
     @NotBlank
-    @Size(min = 5, message = "Zip code must be at least 5 characters long")
-    private String zipCode;
+    @Size(min = 10, message = "Phone number must be at least 10 characters long")
+    private String phoneNumber;
 }
