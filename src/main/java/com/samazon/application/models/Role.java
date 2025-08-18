@@ -1,5 +1,7 @@
 package com.samazon.application.models;
 
+import com.samazon.application.models.enums.RoleType;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

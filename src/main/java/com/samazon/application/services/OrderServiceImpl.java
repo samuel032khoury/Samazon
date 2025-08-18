@@ -19,7 +19,7 @@ import com.samazon.application.models.OrderStatus;
 import com.samazon.application.models.Payment;
 import com.samazon.application.models.Product;
 import com.samazon.application.models.User;
-import com.samazon.application.repositories.AddressRepository;
+import com.samazon.application.models.enums.OrderStatus;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.OrderRepository;
 import com.samazon.application.repositories.ProductRepository;
