@@ -1,9 +1,11 @@
 package com.samazon.application.models;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +31,8 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double totalPrice = 0.0;
+    @Column(name = "total_amount", precision = 10, scale = 2)
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -39,8 +42,4 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @ToString.Exclude
     private final List<CartItem> cartItems = new ArrayList<>();
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = Math.round(totalPrice * 100.0) / 100.0;
-    }
 }

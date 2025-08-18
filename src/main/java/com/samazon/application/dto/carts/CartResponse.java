@@ -1,5 +1,6 @@
 package com.samazon.application.dto.carts;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartResponse {
     private Long id;
-    private Double totalPrice = 0.0;
+    private BigDecimal totalAmount = BigDecimal.ZERO;
     private List<CartItemResponse> cartItems = new ArrayList<>();
 }

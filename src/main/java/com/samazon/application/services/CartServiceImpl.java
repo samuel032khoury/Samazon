@@ -1,5 +1,7 @@
 package com.samazon.application.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -54,7 +56,6 @@ public class CartServiceImpl implements CartService {
                 .cart(cart)
                 .product(product)
                 .quantity(quantity)
-                .discount(product.getDiscount())
                 .unitPriceAtAddToCart(
                         product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
                 .build();
@@ -157,7 +158,7 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.delete(cartItem);
         });
         cart.getCartItems().clear();
-        cart.setTotalPrice(0.0);
+        cart.setTotalAmount(BigDecimal.ZERO);
         cartRepository.save(cart);
     }
 
@@ -166,7 +167,7 @@ public class CartServiceImpl implements CartService {
     public void createCartForUser(User newUser) {
         Cart cart = new Cart();
         cart.setUser(newUser);
-        cart.setTotalPrice(0.0);
+        cart.setTotalAmount(BigDecimal.ZERO);
         newUser.setCart(cart);
         cartRepository.save(cart);
     }
@@ -205,7 +206,7 @@ public class CartServiceImpl implements CartService {
     private Cart updateCartTotal(Cart cart) {
         cart.getCartItems().removeIf(ci -> ci.getProduct() == null);
 
-        double totalPrice = cart.getCartItems().stream()
+        double totalAmount = cart.getCartItems().stream()
                 .filter(item -> item.getProduct() != null) // safety
                 .mapToDouble(item -> {
                     Product p = item.getProduct();
@@ -213,7 +214,7 @@ public class CartServiceImpl implements CartService {
                     return unitPrice * item.getQuantity();
                 })
                 .sum();
-        cart.setTotalPrice(totalPrice);
+        cart.setTotalAmount(BigDecimal.valueOf(totalAmount).setScale(2, RoundingMode.HALF_UP));
         return cartRepository.save(cart);
     }
 
