@@ -27,7 +27,6 @@ public class CartItem {
     private Long id;
 
     private Integer quantity;
-    private Double discount;
     private Double unitPriceAtAddToCart; // display as the original price when added to cart
 
     @ManyToOne(fetch = FetchType.LAZY)

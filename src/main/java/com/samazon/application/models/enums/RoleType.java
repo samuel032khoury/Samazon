@@ -1,4 +1,4 @@
-package com.samazon.application.models;
+package com.samazon.application.models.enums;
 
 public enum RoleType {
     ROLE_USER,

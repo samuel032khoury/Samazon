@@ -32,8 +32,8 @@ public class AddressServiceImpl implements AddressService {
             throw new APIException("User must be persisted before adding an address");
         }
         boolean exists = addressRepository
-                .existsByUserIdAndFullNameAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
-                        user.getId(), request.getFullName(), request.getAddressLine1(),
+                .existsByUserIdAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
+                        user.getId(), request.getAddressLine1(),
                         request.getAddressLine2(), request.getCity(), request.getState(), request.getPostalCode(),
                         request.getCountry(), null);
         if (exists) {
@@ -83,8 +83,8 @@ public class AddressServiceImpl implements AddressService {
             throw new AccessDeniedException("You do not have permission to update this address");
         }
         if (addressRepository
-                .existsByUserIdAndFullNameAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
-                        user.getId(), request.getFullName(), request.getAddressLine1(),
+                .existsByUserIdAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
+                        user.getId(), request.getAddressLine1(),
                         request.getAddressLine2(), request.getCity(), request.getState(), request.getPostalCode(),
                         request.getCountry(), addressId)) {
             throw new APIException("Address already exists for this user with the same details");

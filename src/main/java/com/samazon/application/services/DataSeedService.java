@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.samazon.application.models.Cart;
 import com.samazon.application.models.Role;
-import com.samazon.application.models.RoleType;
 import com.samazon.application.models.User;
+import com.samazon.application.models.enums.RoleType;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.RoleRepository;
 import com.samazon.application.repositories.UserRepository;
