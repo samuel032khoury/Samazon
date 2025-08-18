@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.samazon.application.models.enums.OrderStatus;
+import com.samazon.application.models.records.AddressRecord;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,15 +46,32 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "addressLine1", column = @Column(name = "shipping_address_line1")),
+            @AttributeOverride(name = "addressLine2", column = @Column(name = "shipping_address_line2")),
+            @AttributeOverride(name = "city", column = @Column(name = "shipping_city")),
+            @AttributeOverride(name = "state", column = @Column(name = "shipping_state")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "shipping_postal_code")),
+            @AttributeOverride(name = "country", column = @Column(name = "shipping_country")),
+    })
+    private AddressRecord shippingAddress;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "addressLine1", column = @Column(name = "billing_address_line1")),
+            @AttributeOverride(name = "addressLine2", column = @Column(name = "billing_address_line2")),
+            @AttributeOverride(name = "city", column = @Column(name = "billing_city")),
+            @AttributeOverride(name = "state", column = @Column(name = "billing_state")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "billing_postal_code")),
+            @AttributeOverride(name = "country", column = @Column(name = "billing_country")),
+    })
+    private AddressRecord billingAddress;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    @ToString.Exclude
-    private Address address;
 
     @OneToMany(mappedBy = "order", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.REMOVE }, fetch = FetchType.LAZY, orphanRemoval = true)

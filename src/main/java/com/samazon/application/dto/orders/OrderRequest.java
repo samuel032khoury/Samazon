@@ -9,8 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
+    @Valid
     @NotNull
-    private Long addressId;
+    private AddressRequest shippingAddress;
+
+    @Valid
+    private AddressRequest billingAddress;
     private String paymentMethod;
     private String paymentGatewayProvider;
     private String paymentGatewayId;
