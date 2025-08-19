@@ -3,6 +3,7 @@ package com.samazon.application.services;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponse addProductToCart(Long productId, Integer quantity) {
-        // Find existing cart or create a new one
         Cart cart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
                 .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
 
@@ -43,9 +43,14 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
-        // Perform validations
-        if (cartItemRepository.findByCartIdAndProductId(cart.getId(), productId).isPresent()) {
-            throw new APIException("Product " + product.getName() + " is already in the cart!");
+        Optional<CartItem> existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
+        // if cartItem exists, update its quantity
+        if (existingCartItem.isPresent()) {
+            validateStockAvailability(product, quantity, "increment");
+            CartItem cartItem = existingCartItem.get();
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            cartItemRepository.save(cartItem);
+            return modelMapper.map(cart, CartResponse.class);
         }
 
         validateStockAvailability(product, quantity, "set");
