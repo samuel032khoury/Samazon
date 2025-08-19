@@ -50,6 +50,7 @@ public class CartServiceImpl implements CartService {
             CartItem cartItem = existingCartItem.get();
             cartItem.setQuantity(cartItem.getQuantity() + quantity);
             cartItemRepository.save(cartItem);
+            this.recalculateCartTotal(cart.getId());
             return modelMapper.map(cart, CartResponse.class);
         }
 
