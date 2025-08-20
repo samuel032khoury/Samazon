@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.samazon.application.dto.categories.CategoryRequest;
 import com.samazon.application.dto.categories.CategoryResponse;
 import com.samazon.application.dto.common.PagedResponse;
+import com.samazon.application.events.CategoryDeletedEvent;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Category;
@@ -25,9 +27,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CartService cartService;
-
     private final CategoryRepository categoryRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
@@ -94,10 +96,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Void deleteCategory(Long categoryId) {
         categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
-        List<Long> cartIds = cartService.getAllCartIdsWithCategory(categoryId);
         categoryRepository.deleteById(categoryId);
-        // TODO: use event publisher to recalculate cart totals asynchronously
-        cartIds.forEach(cartId -> cartService.recalculateCartTotal(cartId));
+        eventPublisher.publishEvent(new CategoryDeletedEvent(this, categoryId));
         return null;
     }
 

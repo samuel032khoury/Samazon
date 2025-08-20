@@ -1,14 +1,15 @@
 package com.samazon.application.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.samazon.application.dto.carts.CartResponse;
+import com.samazon.application.events.CartItemChangedEvent;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
@@ -31,6 +32,7 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepository;
 
     private final AuthUtil authUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
@@ -44,33 +46,28 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
         Optional<CartItem> existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
-        // if cartItem exists, update its quantity
         if (existingCartItem.isPresent()) {
-            validateStockAvailability(product, quantity, "increment");
+            // if cartItem exists, update its quantity
             CartItem cartItem = existingCartItem.get();
+            validateStockAvailability(product, cartItem.getQuantity() + quantity, "increment");
             cartItem.setQuantity(cartItem.getQuantity() + quantity);
             cartItemRepository.save(cartItem);
-            this.recalculateCartTotal(cart.getId());
-            return modelMapper.map(cart, CartResponse.class);
+        } else {
+            validateStockAvailability(product, quantity, "set");
+            // Create CartItem and save it
+            CartItem cartItem = CartItem.builder()
+                    .cart(cart)
+                    .product(product)
+                    .quantity(quantity)
+                    .unitPriceAtAddToCart(
+                            product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
+                    .build();
+            cartItemRepository.save(cartItem);
+            cart.getCartItems().add(cartItem);
         }
 
-        validateStockAvailability(product, quantity, "set");
-
-        // Create CartItem and save it
-        CartItem cartItem = CartItem.builder()
-                .cart(cart)
-                .product(product)
-                .quantity(quantity)
-                .unitPriceAtAddToCart(
-                        product.getSpecialPrice() != null ? product.getSpecialPrice() : product.getPrice())
-                .build();
-        cartItemRepository.save(cartItem);
-
-        cart.getCartItems().add(cartItem);
-
-        Cart updatedCart = updateCartTotal(cart);
-
-        return modelMapper.map(updatedCart, CartResponse.class);
+        eventPublisher.publishEvent(new CartItemChangedEvent(this, cart.getId()));
+        return modelMapper.map(cart, CartResponse.class);
     }
 
     @Override
@@ -79,18 +76,6 @@ public class CartServiceImpl implements CartService {
         return carts.stream()
                 .map(cart -> modelMapper.map(cart, CartResponse.class))
                 .toList();
-    }
-
-    @Override
-    public List<Long> getAllCartIdsWithCategory(Long categoryId) {
-        return cartRepository.findByCartItemsProductCategoryId(categoryId)
-                .stream().map(Cart::getId).toList();
-    }
-
-    @Override
-    public List<Long> getAllCartIdsWithProduct(Long productId) {
-        return cartRepository.findByCartItemsProductId(productId)
-                .stream().map(Cart::getId).toList();
     }
 
     @Override
@@ -120,8 +105,8 @@ public class CartServiceImpl implements CartService {
             cartItem.setQuantity(newQuantity);
             cartItemRepository.save(cartItem);
         }
-        Cart updatedCart = updateCartTotal(cart);
-        return modelMapper.map(updatedCart, CartResponse.class);
+        eventPublisher.publishEvent(new CartItemChangedEvent(this, cart.getId()));
+        return modelMapper.map(cart, CartResponse.class);
     }
 
     @Override
@@ -136,19 +121,7 @@ public class CartServiceImpl implements CartService {
                         productId + " and " + userId));
 
         removeCartItem(cart, cartItem);
-        updateCartTotal(cart);
-    }
-
-    @Override
-    public void recalculateCartTotal(Long cartId) {
-        cartRepository.findById(cartId).ifPresent(cart -> {
-            cart.getCartItems().forEach(cartItem -> {
-                if (cartItem.getProduct() != null) {
-                    cartItem.setProduct(productRepository.findById(cartItem.getProduct().getId()).orElse(null));
-                }
-            });
-            updateCartTotal(cart);
-        });
+        eventPublisher.publishEvent(new CartItemChangedEvent(this, cart.getId()));
     }
 
     @Override
@@ -190,20 +163,5 @@ public class CartServiceImpl implements CartService {
         cart.getCartItems().remove(cartItem);
         cartItem.getProduct().getCartItems().remove(cartItem);
         cartItemRepository.delete(cartItem);
-    }
-
-    private Cart updateCartTotal(Cart cart) {
-        cart.getCartItems().removeIf(ci -> ci.getProduct() == null);
-
-        double totalAmount = cart.getCartItems().stream()
-                .filter(item -> item.getProduct() != null) // safety
-                .mapToDouble(item -> {
-                    Product p = item.getProduct();
-                    double unitPrice = p.getSpecialPrice() != null ? p.getSpecialPrice() : p.getPrice();
-                    return unitPrice * item.getQuantity();
-                })
-                .sum();
-        cart.setTotalAmount(BigDecimal.valueOf(totalAmount).setScale(2, RoundingMode.HALF_UP));
-        return cartRepository.save(cart);
     }
 }

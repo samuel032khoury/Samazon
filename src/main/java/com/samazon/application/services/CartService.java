@@ -11,10 +11,6 @@ public interface CartService {
 
     List<CartResponse> getAllCarts();
 
-    List<Long> getAllCartIdsWithCategory(Long categoryId);
-
-    List<Long> getAllCartIdsWithProduct(Long productId);
-
     CartResponse getCurrentUserCart();
 
     @Transactional
@@ -22,8 +18,6 @@ public interface CartService {
 
     @Transactional
     void removeCartItem(Long productId);
-
-    void recalculateCartTotal(Long cartId);
 
     @Transactional
     void clearCart(Long cartId);

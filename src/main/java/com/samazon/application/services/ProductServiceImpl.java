@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.samazon.application.dto.common.PagedResponse;
 import com.samazon.application.dto.products.ProductRequest;
 import com.samazon.application.dto.products.ProductResponse;
+import com.samazon.application.events.ProductChangedEvent;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.AccessDeniedException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
@@ -38,10 +40,10 @@ public class ProductServiceImpl implements ProductService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
-    private final CartService cartService;
     private final FileService fileService;
 
     private final AuthUtil authUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
@@ -155,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product updated = productRepository.save(existingProduct);
-        cartService.getAllCartIdsWithProduct(productId).forEach(cartService::recalculateCartTotal);
+        eventPublisher.publishEvent(new ProductChangedEvent(this, productId));
         return modelMapper.map(updated, ProductResponse.class);
     }
 
@@ -183,7 +185,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setSpecialPrice(calculateSpecialPrice(request.getPrice(), request.getDiscount()));
 
         Product updatedProduct = productRepository.save(existingProduct);
-        cartService.getAllCartIdsWithProduct(productId).forEach(cartId -> cartService.recalculateCartTotal(cartId));
+        eventPublisher.publishEvent(new ProductChangedEvent(this, productId));
         return modelMapper.map(updatedProduct, ProductResponse.class);
     }
 
@@ -207,13 +209,10 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
                         productId));
         checkModificationPermission(product);
-        List<Long> cartIds = cartService.getAllCartIdsWithProduct(productId);
 
         cartItemRepository.deleteAllByProductId(productId);
-
         productRepository.delete(product);
-
-        cartIds.forEach(cartService::recalculateCartTotal);
+        eventPublisher.publishEvent(new ProductChangedEvent(this, productId));
         return null;
     }
 
