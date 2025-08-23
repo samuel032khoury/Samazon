@@ -87,7 +87,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartResponse updateProductQuantityFromUserCart(Long productId, Integer quantity, String action) {
+    public CartResponse updateProductQuantityInUserCart(Long productId, Integer quantity, String action) {
         Long userId = authUtil.getCurrentUser().getId();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));

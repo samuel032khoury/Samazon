@@ -14,7 +14,7 @@ public interface CartService {
     CartResponse getUserCart();
 
     @Transactional
-    CartResponse updateProductQuantityFromUserCart(Long productId, Integer quantity, String action);
+    CartResponse updateProductQuantityInUserCart(Long productId, Integer quantity, String action);
 
     @Transactional
     void removeProductFromUserCart(Long productId);

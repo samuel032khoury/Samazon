@@ -49,7 +49,7 @@ public class CartController {
     @PatchMapping("/user/cart/item")
     public ResponseEntity<CartResponse> updateCartItemQuantity(@RequestParam Long productId,
             @Valid @RequestBody CartItemUpdateQuantityRequest request) {
-        CartResponse response = cartService.updateProductQuantityFromUserCart(productId, request.getQuantity(),
+        CartResponse response = cartService.updateProductQuantityInUserCart(productId, request.getQuantity(),
                 request.getAction());
         return ResponseEntity.ok(response);
     }
