@@ -21,7 +21,7 @@ public interface AddressService {
 
     AddressResponse updateAddress(Long addressId, AddressRequest request);
 
-    Void deleteAddress(Long addressId);
+    void deleteAddress(Long addressId);
 
-    Void checkPermission(User user, Long addressId);
+    void checkPermission(User user, Long addressId);
 }

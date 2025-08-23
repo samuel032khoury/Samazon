@@ -19,7 +19,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     private final RoleRepository roleRepository;
 
     @Override
-    public Void assignAdminRole(Long userId) {
+    public void assignAdminRole(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
@@ -32,11 +32,10 @@ public class AccessControlServiceImpl implements AccessControlService {
 
         user.getRoles().add(adminRole);
         userRepository.save(user);
-        return null;
     }
 
     @Override
-    public Void revokeAdminRole(Long userId) {
+    public void revokeAdminRole(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
@@ -49,7 +48,6 @@ public class AccessControlServiceImpl implements AccessControlService {
 
         user.getRoles().remove(adminRole);
         userRepository.save(user);
-        return null;
     }
 
 }

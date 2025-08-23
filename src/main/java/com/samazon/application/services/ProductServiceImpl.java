@@ -199,7 +199,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Void deleteProduct(Long productId) {
+    public void deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
                         productId));
@@ -214,11 +214,10 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         eventPublisher.publishEvent(new ProductDeletedEvent(this, cartIds));
-        return null;
     }
 
     @Override
-    public Void checkModificationPermission(User user, Long productId) {
+    public void checkPermission(User user, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         if (product.getSeller().getId() != user.getId() &&
@@ -227,7 +226,6 @@ public class ProductServiceImpl implements ProductService {
                                 || role.getRoleType().equals(RoleType.ROLE_SUPER_ADMIN))) {
             throw new AccessDeniedException("You don't have permission to access this product!");
         }
-        return null;
     }
 
     private Double calculateSpecialPrice(Double price, Double discount) {

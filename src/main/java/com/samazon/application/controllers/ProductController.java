@@ -67,7 +67,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> patchProduct(
             @PathVariable Long productId,
             @RequestBody @Validated(OnPatch.class) ProductRequest request) {
-        productService.checkModificationPermission(authUtil.getCurrentUser(), productId);
+        productService.checkPermission(authUtil.getCurrentUser(), productId);
         ProductResponse patchedProductResponse = productService.patchProduct(productId, request);
         return ResponseEntity.ok(patchedProductResponse);
     }
@@ -75,7 +75,7 @@ public class ProductController {
     @PutMapping("/products/{productId}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long productId,
             @RequestBody @Validated(OnCreateOrUpdate.class) ProductRequest request) {
-        productService.checkModificationPermission(authUtil.getCurrentUser(), productId);
+        productService.checkPermission(authUtil.getCurrentUser(), productId);
         ProductResponse updatedProductResponse = productService.updateProduct(productId, request);
         return ResponseEntity.ok(updatedProductResponse);
     }
@@ -83,14 +83,14 @@ public class ProductController {
     @PutMapping("/products/{productId}/image")
     public ResponseEntity<ProductResponse> updateProductImage(@PathVariable Long productId,
             @RequestParam("image") MultipartFile image) throws IOException {
-        productService.checkModificationPermission(authUtil.getCurrentUser(), productId);
+        productService.checkPermission(authUtil.getCurrentUser(), productId);
         ProductResponse updatedProductResponse = productService.updateProductImage(productId, image);
         return ResponseEntity.ok(updatedProductResponse);
     }
 
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
-        productService.checkModificationPermission(authUtil.getCurrentUser(), productId);
+        productService.checkPermission(authUtil.getCurrentUser(), productId);
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }

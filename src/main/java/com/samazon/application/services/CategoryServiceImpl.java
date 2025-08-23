@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Void deleteCategory(Long categoryId) {
+    public void deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         categoryRepository.deleteById(categoryId);
@@ -113,7 +113,6 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
         eventPublisher.publishEvent(new CategoryDeletedEvent(this, cartIds));
-        return null;
     }
 
 }

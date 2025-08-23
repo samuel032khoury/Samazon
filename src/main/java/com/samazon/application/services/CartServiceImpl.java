@@ -118,7 +118,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public Void removeProductFromCart(Long cartId, Long productId) {
+    public void removeProductFromCart(Long cartId, Long productId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
         CartItem cartItem = cartItemRepository
@@ -128,12 +128,11 @@ public class CartServiceImpl implements CartService {
 
         removeCartItem(cart, cartItem);
         eventPublisher.publishEvent(new CartItemChangedEvent(this, cart.getId()));
-        return null;
     }
 
     @Override
     @Transactional
-    public Void clearCart(Long cartId) {
+    public void clearCart(Long cartId) {
         Cart cart = cartRepository.findById(
                 cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
@@ -144,7 +143,6 @@ public class CartServiceImpl implements CartService {
         cart.getCartItems().clear();
         cart.setTotalAmount(BigDecimal.ZERO);
         cartRepository.save(cart);
-        return null;
     }
 
     private int calculateNewQuantity(Integer currentQuantity, Integer requestedQuantity, String action) {

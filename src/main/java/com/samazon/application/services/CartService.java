@@ -20,8 +20,8 @@ public interface CartService {
     CartResponse updateCartItemQuantity(Long cartId, Long productId, CartItemUpdateQuantityRequest request);
 
     @Transactional
-    Void removeProductFromCart(Long cartId, Long productId);
+    void removeProductFromCart(Long cartId, Long productId);
 
     @Transactional
-    Void clearCart(Long cartId);
+    void clearCart(Long cartId);
 }

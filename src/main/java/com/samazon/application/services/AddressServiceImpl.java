@@ -92,20 +92,18 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Void deleteAddress(Long addressId) {
+    public void deleteAddress(Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         addressRepository.delete(address);
-        return null;
     }
 
     @Override
-    public Void checkPermission(User user, Long addressId) {
+    public void checkPermission(User user, Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         if (!address.getUser().equals(user)) {
             throw new AccessDeniedException("You do not have permission to access this address");
         }
-        return null;
     }
 }
