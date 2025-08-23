@@ -40,6 +40,13 @@ public class CartItemChangedEventListener {
         carts.forEach(this::updateCartTotal);
     }
 
+    @EventListener
+    @Transactional
+    public void handleProductDeleted(ProductDeletedEvent event) {
+        List<Cart> carts = cartRepository.findAllById(event.getCartIds());
+        carts.forEach(this::updateCartTotal);
+    }
+
     private void updateCartTotal(Cart cart) {
         cart.getCartItems().removeIf(ci -> ci.getProduct() == null);
 

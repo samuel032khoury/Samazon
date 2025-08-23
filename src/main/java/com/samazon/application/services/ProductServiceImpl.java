@@ -1,6 +1,7 @@
 package com.samazon.application.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,14 +18,16 @@ import com.samazon.application.dto.common.PagedResponse;
 import com.samazon.application.dto.products.ProductRequest;
 import com.samazon.application.dto.products.ProductResponse;
 import com.samazon.application.events.ProductChangedEvent;
+import com.samazon.application.events.ProductDeletedEvent;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.AccessDeniedException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
+import com.samazon.application.models.Cart;
+import com.samazon.application.models.CartItem;
 import com.samazon.application.models.Category;
 import com.samazon.application.models.Product;
 import com.samazon.application.models.User;
 import com.samazon.application.models.enums.RoleType;
-import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
 import com.samazon.application.utils.AuthUtil;
@@ -37,7 +40,6 @@ import lombok.RequiredArgsConstructor;
 public class ProductServiceImpl implements ProductService {
 
     private final CategoryRepository categoryRepository;
-    private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
     private final FileService fileService;
@@ -208,11 +210,18 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
                         productId));
+        List<Long> cartIds = new ArrayList<>();
         checkModificationPermission(product);
 
-        cartItemRepository.deleteAllByProductId(productId);
         productRepository.delete(product);
-        eventPublisher.publishEvent(new ProductChangedEvent(this, productId));
+        for (CartItem item : product.getCartItems()) {
+            Cart cart = item.getCart();
+            if (cart != null) {
+                cart.getCartItems().remove(item);
+                cartIds.add(cart.getId());
+            }
+        }
+        eventPublisher.publishEvent(new ProductDeletedEvent(this, cartIds));
         return null;
     }
 
