@@ -1,7 +1,9 @@
 package com.samazon.application.services;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
@@ -17,7 +19,10 @@ import com.samazon.application.dto.common.PagedResponse;
 import com.samazon.application.events.CategoryDeletedEvent;
 import com.samazon.application.exceptions.APIException;
 import com.samazon.application.exceptions.ResourceNotFoundException;
+import com.samazon.application.models.Cart;
+import com.samazon.application.models.CartItem;
 import com.samazon.application.models.Category;
+import com.samazon.application.models.Product;
 import com.samazon.application.repositories.CategoryRepository;
 
 import jakarta.transaction.Transactional;
@@ -94,10 +99,20 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public Void deleteCategory(Long categoryId) {
-        categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         categoryRepository.deleteById(categoryId);
-        eventPublisher.publishEvent(new CategoryDeletedEvent(this, categoryId));
+        Set<Long> cartIds = new HashSet<>();
+        for (Product product : category.getProducts()) {
+            for (CartItem item : product.getCartItems()) {
+                Cart cart = item.getCart();
+                if (cart != null) {
+                    cart.getCartItems().remove(item);
+                    cartIds.add(cart.getId());
+                }
+            }
+        }
+        eventPublisher.publishEvent(new CategoryDeletedEvent(this, cartIds));
         return null;
     }
 

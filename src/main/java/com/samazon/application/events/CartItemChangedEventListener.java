@@ -36,7 +36,7 @@ public class CartItemChangedEventListener {
     @EventListener
     @Transactional
     public void handleCategoryDeleted(CategoryDeletedEvent event) {
-        List<Cart> carts = cartRepository.findByCartItemsProductCategoryId(event.getCategoryId());
+        List<Cart> carts = cartRepository.findAllById(event.getCartIds());
         carts.forEach(this::updateCartTotal);
     }
 
