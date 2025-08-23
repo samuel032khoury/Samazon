@@ -29,7 +29,7 @@ public class CartController {
 
     @PostMapping("/user/cart")
     public ResponseEntity<CartResponse> addToCart(@Valid @RequestBody CartItemRequest request) {
-        CartResponse response = cartService.addProductToCart(request.getProductId(),
+        CartResponse response = cartService.addProductToUserCart(request.getProductId(),
                 request.getQuantity());
         return ResponseEntity.ok(response);
     }
@@ -41,22 +41,22 @@ public class CartController {
     }
 
     @GetMapping("/user/cart")
-    public ResponseEntity<CartResponse> getCurrentUserCart() {
-        CartResponse response = cartService.getCurrentUserCart();
+    public ResponseEntity<CartResponse> getUserCart() {
+        CartResponse response = cartService.getUserCart();
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/user/cart/item")
     public ResponseEntity<CartResponse> updateCartItemQuantity(@RequestParam Long productId,
             @Valid @RequestBody CartItemUpdateQuantityRequest request) {
-        CartResponse response = cartService.updateCartItemQuantity(productId, request.getQuantity(),
+        CartResponse response = cartService.updateProductQuantityFromUserCart(productId, request.getQuantity(),
                 request.getAction());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/user/cart/item")
     public ResponseEntity<Void> removeCartItem(@RequestParam Long productId) {
-        cartService.removeCartItem(productId);
+        cartService.removeProductFromUserCart(productId);
         return ResponseEntity.noContent().build();
     }
 

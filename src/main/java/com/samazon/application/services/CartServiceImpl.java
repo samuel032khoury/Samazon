@@ -37,7 +37,7 @@ public class CartServiceImpl implements CartService {
     private final ModelMapper modelMapper;
 
     @Override
-    public CartResponse addProductToCart(Long productId, Integer quantity) {
+    public CartResponse addProductToUserCart(Long productId, Integer quantity) {
         Cart cart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
                 .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
 
@@ -79,7 +79,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse getCurrentUserCart() {
+    public CartResponse getUserCart() {
         Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
                 .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
         return modelMapper.map(userCart, CartResponse.class);
@@ -87,7 +87,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartResponse updateCartItemQuantity(Long productId, Integer quantity, String action) {
+    public CartResponse updateProductQuantityFromUserCart(Long productId, Integer quantity, String action) {
         Long userId = authUtil.getCurrentUser().getId();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
@@ -111,7 +111,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void removeCartItem(Long productId) {
+    public void removeProductFromUserCart(Long productId) {
         Long userId = authUtil.getCurrentUser().getId();
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));

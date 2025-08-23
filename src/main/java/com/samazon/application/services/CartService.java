@@ -7,17 +7,17 @@ import com.samazon.application.dto.carts.CartResponse;
 import jakarta.transaction.Transactional;
 
 public interface CartService {
-    CartResponse addProductToCart(Long productId, Integer quantity);
+    CartResponse addProductToUserCart(Long productId, Integer quantity);
 
     List<CartResponse> getAllCarts();
 
-    CartResponse getCurrentUserCart();
+    CartResponse getUserCart();
 
     @Transactional
-    CartResponse updateCartItemQuantity(Long productId, Integer quantity, String action);
+    CartResponse updateProductQuantityFromUserCart(Long productId, Integer quantity, String action);
 
     @Transactional
-    void removeCartItem(Long productId);
+    void removeProductFromUserCart(Long productId);
 
     @Transactional
     void clearCart(Long cartId);
