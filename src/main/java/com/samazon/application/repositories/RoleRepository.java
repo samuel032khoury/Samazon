@@ -11,8 +11,6 @@ import com.samazon.application.models.enums.RoleType;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    Boolean existsByRoleType(String name);
-
     Optional<Role> findByRoleType(RoleType roleType);
 
 }
