@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class CartItemResponse {
     private Long id;
     private Integer quantity;
-    private Double discount;
     private Double unitPriceAtAddToCart;
     private Long cartId;
     private ProductResponse product;

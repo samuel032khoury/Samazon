@@ -54,6 +54,8 @@ public class AddressController {
 
     @GetMapping("/user/addresses/{addressId}")
     public ResponseEntity<AddressResponse> getAddressById(@PathVariable Long addressId) {
+        User user = authUtil.getCurrentUser();
+        addressService.checkPermission(user, addressId);
         AddressResponse addressResponse = addressService.getAddressById(addressId);
         return new ResponseEntity<>(addressResponse, HttpStatus.OK);
     }
@@ -62,7 +64,7 @@ public class AddressController {
     public ResponseEntity<AddressResponse> updateAddress(@PathVariable Long addressId,
             @Valid @RequestBody AddressRequest request) {
         User user = authUtil.getCurrentUser();
-        addressService.checkModificationPermission(user, addressId);
+        addressService.checkPermission(user, addressId);
         AddressResponse updatedAddressResponse = addressService.updateAddress(addressId, request);
         return new ResponseEntity<>(updatedAddressResponse, HttpStatus.OK);
     }
@@ -70,7 +72,7 @@ public class AddressController {
     @DeleteMapping("/user/addresses/{addressId}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long addressId) {
         User user = authUtil.getCurrentUser();
-        addressService.checkModificationPermission(user, addressId);
+        addressService.checkPermission(user, addressId);
         addressService.deleteAddress(addressId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

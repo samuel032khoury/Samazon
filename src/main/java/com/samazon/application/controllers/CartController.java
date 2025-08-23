@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.carts.CartItemRequest;
 import com.samazon.application.dto.carts.CartResponse;
+import com.samazon.application.models.User;
 import com.samazon.application.dto.carts.CartItemUpdateQuantityRequest;
 import com.samazon.application.services.CartService;
+import com.samazon.application.utils.AuthUtil;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,12 +27,14 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CartController {
 
+    private final AuthUtil authUtil;
+
     private final CartService cartService;
 
     @PostMapping("/user/cart")
-    public ResponseEntity<CartResponse> addToCart(@Valid @RequestBody CartItemRequest request) {
-        CartResponse response = cartService.addProductToUserCart(request.getProductId(),
-                request.getQuantity());
+    public ResponseEntity<CartResponse> addCartItemToUserCart(@Valid @RequestBody CartItemRequest request) {
+        Long cartId = authUtil.getCurrentUser().getCart().getId();
+        CartResponse response = cartService.addCartItemToCart(cartId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -42,21 +46,23 @@ public class CartController {
 
     @GetMapping("/user/cart")
     public ResponseEntity<CartResponse> getUserCart() {
-        CartResponse response = cartService.getUserCart();
+        User user = authUtil.getCurrentUser();
+        CartResponse response = cartService.getCartByUser(user);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/user/cart/item")
-    public ResponseEntity<CartResponse> updateCartItemQuantity(@RequestParam Long productId,
+    @PatchMapping("/user/cart/items")
+    public ResponseEntity<CartResponse> updateUserCartItemQuantity(@RequestParam Long productId,
             @Valid @RequestBody CartItemUpdateQuantityRequest request) {
-        CartResponse response = cartService.updateProductQuantityInUserCart(productId, request.getQuantity(),
-                request.getAction());
+        Long cartId = authUtil.getCurrentUser().getCart().getId();
+        CartResponse response = cartService.updateCartItemQuantity(cartId, productId, request);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/user/cart/item")
-    public ResponseEntity<Void> removeCartItem(@RequestParam Long productId) {
-        cartService.removeProductFromUserCart(productId);
+    @DeleteMapping("/user/cart/items")
+    public ResponseEntity<Void> removeProductFromUserCart(@RequestParam Long productId) {
+        Long cartId = authUtil.getCurrentUser().getCart().getId();
+        cartService.removeProductFromCart(cartId, productId);
         return ResponseEntity.noContent().build();
     }
 

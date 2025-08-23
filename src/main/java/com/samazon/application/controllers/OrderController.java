@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.orders.OrderRequest;
 import com.samazon.application.dto.orders.OrderResponse;
+import com.samazon.application.models.User;
 import com.samazon.application.services.OrderService;
 import com.samazon.application.utils.AuthUtil;
 
@@ -30,7 +31,8 @@ public class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
-        OrderResponse response = orderService.createOrder(request);
+        User currentUser = authUtil.getCurrentUser();
+        OrderResponse response = orderService.createOrder(currentUser, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -42,12 +44,14 @@ public class OrderController {
 
     @GetMapping("/user/orders")
     public ResponseEntity<List<OrderResponse>> getUserOrders() {
-        List<OrderResponse> responses = orderService.getOrdersByUserId(authUtil.getCurrentUser().getId());
+        List<OrderResponse> responses = orderService.getOrdersByUser(authUtil.getCurrentUser());
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
     @GetMapping("/user/orders/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {
+        User user = authUtil.getCurrentUser();
+        orderService.checkPermission(user, orderId);
         OrderResponse response = orderService.getOrderById(orderId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

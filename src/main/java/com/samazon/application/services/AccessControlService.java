@@ -2,8 +2,8 @@ package com.samazon.application.services;
 
 public interface AccessControlService {
 
-    void assignAdminRole(Long userId);
+    Void assignAdminRole(Long userId);
 
-    void revokeAdminRole(Long userId);
+    Void revokeAdminRole(Long userId);
 
 }

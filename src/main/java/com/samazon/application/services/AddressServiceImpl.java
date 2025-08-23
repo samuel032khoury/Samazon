@@ -100,11 +100,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Void checkModificationPermission(User user, Long addressId) {
+    public Void checkPermission(User user, Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
         if (!address.getUser().equals(user)) {
-            throw new AccessDeniedException("You do not have permission to modify this address");
+            throw new AccessDeniedException("You do not have permission to access this address");
         }
         return null;
     }

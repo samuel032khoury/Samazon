@@ -2,23 +2,26 @@ package com.samazon.application.services;
 
 import java.util.List;
 
+import com.samazon.application.dto.carts.CartItemRequest;
+import com.samazon.application.dto.carts.CartItemUpdateQuantityRequest;
 import com.samazon.application.dto.carts.CartResponse;
+import com.samazon.application.models.User;
 
 import jakarta.transaction.Transactional;
 
 public interface CartService {
-    CartResponse addProductToUserCart(Long productId, Integer quantity);
+    CartResponse addCartItemToCart(Long cartId, CartItemRequest request);
 
     List<CartResponse> getAllCarts();
 
-    CartResponse getUserCart();
+    CartResponse getCartByUser(User user);
 
     @Transactional
-    CartResponse updateProductQuantityInUserCart(Long productId, Integer quantity, String action);
+    CartResponse updateCartItemQuantity(Long cartId, Long productId, CartItemUpdateQuantityRequest request);
 
     @Transactional
-    void removeProductFromUserCart(Long productId);
+    Void removeProductFromCart(Long cartId, Long productId);
 
     @Transactional
-    void clearCart(Long cartId);
+    Void clearCart(Long cartId);
 }

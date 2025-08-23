@@ -225,7 +225,7 @@ public class ProductServiceImpl implements ProductService {
                 !user.getRoles().stream()
                         .anyMatch(role -> role.getRoleType().equals(RoleType.ROLE_ADMIN)
                                 || role.getRoleType().equals(RoleType.ROLE_SUPER_ADMIN))) {
-            throw new AccessDeniedException("You don't have permission to modify this product!");
+            throw new AccessDeniedException("You don't have permission to access this product!");
         }
         return null;
     }

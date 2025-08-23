@@ -38,15 +38,15 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/products")
-    public ResponseEntity<ProductResponse> addProduct(
+    public ResponseEntity<ProductResponse> createProduct(
             @RequestBody @Validated(OnCreateOrUpdate.class) ProductRequest request) {
         ProductResponse createdProductResponse = productService.createProduct(authUtil.getCurrentUser(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProductResponse);
     }
 
     @GetMapping("/public/products")
-    public ResponseEntity<PagedResponse<ProductResponse>> getProducts(
-            @RequestParam(name = "category", required = false) Long categoryId,
+    public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
             @RequestParam(name = "search", required = false) String keyword,
             @RequestParam(name = "page", defaultValue = AppConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "size", defaultValue = AppConstants.PAGE_SIZE) Integer size,

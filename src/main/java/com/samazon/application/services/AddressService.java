@@ -23,5 +23,5 @@ public interface AddressService {
 
     Void deleteAddress(Long addressId);
 
-    Void checkModificationPermission(User user, Long addressId);
+    Void checkPermission(User user, Long addressId);
 }

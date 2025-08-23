@@ -8,6 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import com.samazon.application.dto.carts.CartItemRequest;
+import com.samazon.application.dto.carts.CartItemUpdateQuantityRequest;
 import com.samazon.application.dto.carts.CartResponse;
 import com.samazon.application.events.CartItemChangedEvent;
 import com.samazon.application.exceptions.APIException;
@@ -15,10 +17,10 @@ import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
 import com.samazon.application.models.CartItem;
 import com.samazon.application.models.Product;
+import com.samazon.application.models.User;
 import com.samazon.application.repositories.CartItemRepository;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.ProductRepository;
-import com.samazon.application.utils.AuthUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -31,21 +33,23 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
-    private final AuthUtil authUtil;
     private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
     @Override
-    public CartResponse addProductToUserCart(Long productId, Integer quantity) {
-        Cart cart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
-                .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
+    public CartResponse addCartItemToCart(Long cartId, CartItemRequest request) {
+        long productId = request.getProductId();
+        int quantity = request.getQuantity();
+
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
 
         // Retrieve Product Details
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
-        Optional<CartItem> existingCartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
+        Optional<CartItem> existingCartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId);
         if (existingCartItem.isPresent()) {
             // if cartItem exists, update its quantity
             CartItem cartItem = existingCartItem.get();
@@ -66,7 +70,7 @@ public class CartServiceImpl implements CartService {
             cart.getCartItems().add(cartItem);
         }
 
-        eventPublisher.publishEvent(new CartItemChangedEvent(this, cart.getId()));
+        eventPublisher.publishEvent(new CartItemChangedEvent(this, cartId));
         return modelMapper.map(cart, CartResponse.class);
     }
 
@@ -79,24 +83,27 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse getUserCart() {
-        Cart userCart = cartRepository.findByUserId(authUtil.getCurrentUser().getId())
-                .orElseThrow(() -> new APIException("Cart not found for user: " + authUtil.getCurrentUser().getId()));
+    public CartResponse getCartByUser(User user) {
+        Cart userCart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new APIException("Cart not found for user: " + user.getId()));
         return modelMapper.map(userCart, CartResponse.class);
     }
 
     @Override
     @Transactional
-    public CartResponse updateProductQuantityInUserCart(Long productId, Integer quantity, String action) {
-        Long userId = authUtil.getCurrentUser().getId();
+    public CartResponse updateCartItemQuantity(Long cartId, Long productId, CartItemUpdateQuantityRequest request) {
+        int quantity = request.getQuantity();
+        String action = request.getAction();
+
+        // Long userId = authUtil.getCurrentUser().getId();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
         CartItem cartItem = cartItemRepository
-                .findByProductIdAndCartUserId(productId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId and userId",
-                        productId + " and " + userId));
+                .findByCartIdAndProductId(cartId, productId)
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId and cartId",
+                        productId + " and " + cartId));
         int newQuantity = calculateNewQuantity(cartItem.getQuantity(), quantity, action);
         validateStockAvailability(product, newQuantity, action);
         if (newQuantity <= 0) {
@@ -111,22 +118,22 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void removeProductFromUserCart(Long productId) {
-        Long userId = authUtil.getCurrentUser().getId();
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", userId));
+    public Void removeProductFromCart(Long cartId, Long productId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
         CartItem cartItem = cartItemRepository
-                .findByProductIdAndCartUserId(productId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId and userId",
-                        productId + " and " + userId));
+                .findByCartIdAndProductId(cartId, productId)
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "productId and cartId",
+                        productId + " and " + cartId));
 
         removeCartItem(cart, cartItem);
         eventPublisher.publishEvent(new CartItemChangedEvent(this, cart.getId()));
+        return null;
     }
 
     @Override
     @Transactional
-    public void clearCart(Long cartId) {
+    public Void clearCart(Long cartId) {
         Cart cart = cartRepository.findById(
                 cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "id", cartId));
@@ -137,6 +144,7 @@ public class CartServiceImpl implements CartService {
         cart.getCartItems().clear();
         cart.setTotalAmount(BigDecimal.ZERO);
         cartRepository.save(cart);
+        return null;
     }
 
     private int calculateNewQuantity(Integer currentQuantity, Integer requestedQuantity, String action) {

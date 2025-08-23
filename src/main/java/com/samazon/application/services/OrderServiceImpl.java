@@ -11,18 +11,20 @@ import org.springframework.stereotype.Service;
 import com.samazon.application.dto.orders.OrderRequest;
 import com.samazon.application.dto.orders.OrderResponse;
 import com.samazon.application.exceptions.APIException;
+import com.samazon.application.exceptions.AccessDeniedException;
+import com.samazon.application.exceptions.ResourceNotFoundException;
 import com.samazon.application.models.Cart;
 import com.samazon.application.models.CartItem;
 import com.samazon.application.models.Order;
 import com.samazon.application.models.OrderItem;
 import com.samazon.application.models.Product;
 import com.samazon.application.models.User;
-import com.samazon.application.models.records.AddressRecord;
 import com.samazon.application.models.enums.OrderStatus;
+import com.samazon.application.models.enums.RoleType;
+import com.samazon.application.models.records.AddressRecord;
 import com.samazon.application.repositories.CartRepository;
 import com.samazon.application.repositories.OrderRepository;
 import com.samazon.application.repositories.ProductRepository;
-import com.samazon.application.utils.AuthUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -39,17 +41,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
-    private final AuthUtil authUtil;
-
     private final ModelMapper modelMapper;
 
     @Override
     @Transactional
-    public OrderResponse createOrder(OrderRequest request) {
+    public OrderResponse createOrder(User user, OrderRequest request) {
         // Get current user and their cart
-        User currentUser = authUtil.getCurrentUser();
-        Cart userCart = cartRepository.findByUserId(currentUser.getId())
-                .orElseThrow(() -> new APIException("Cart not found for user: " + currentUser.getUsername()));
+        Cart userCart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new APIException("Cart not found for user: " + user.getUsername()));
         List<CartItem> cartItems = userCart.getCartItems();
 
         if (cartItems.isEmpty()) {
@@ -62,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .orderStatus(OrderStatus.PENDING)
-                .user(currentUser)
+                .user(user)
                 .build();
 
         // Set shipping address
@@ -115,46 +114,47 @@ public class OrderServiceImpl implements OrderService {
         Order createdOrder = orderRepository.save(order);
 
         // Add order to user's orders
-        currentUser.getOrders().add(createdOrder);
+        user.getOrders().add(createdOrder);
 
         // Clear the user's cart after successful order creation
         cartService.clearCart(userCart.getId());
 
         // Convert to response
         OrderResponse response = modelMapper.map(createdOrder, OrderResponse.class);
-        log.warn("Order created: {}", createdOrder);
 
         return response;
     }
 
     @Override
     public List<OrderResponse> getAllOrders() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllOrders'");
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(order -> modelMapper.map(order, OrderResponse.class))
+                .toList();
     }
 
     @Override
-    public List<OrderResponse> getOrdersByUserId(Long userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrdersByUserId'");
-    }
-
-    @Override
-    public List<OrderResponse> getOrdersBySellerId(Long sellerId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrdersBySellerId'");
+    public List<OrderResponse> getOrdersByUser(User user) {
+        List<Order> orders = orderRepository.findByUserId(user.getId());
+        return orders.stream()
+                .map(order -> modelMapper.map(order, OrderResponse.class))
+                .toList();
     }
 
     @Override
     public OrderResponse getOrderById(Long orderId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrderById'");
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+        return modelMapper.map(order, OrderResponse.class);
     }
 
     @Override
-    public OrderResponse updateOrderStatus(Long orderId, String status) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateOrderStatus'");
+    public OrderResponse updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+        order.setOrderStatus(status);
+        Order updatedOrder = orderRepository.save(order);
+        return modelMapper.map(updatedOrder, OrderResponse.class);
     }
 
     @Override
@@ -175,4 +175,14 @@ public class OrderServiceImpl implements OrderService {
         throw new UnsupportedOperationException("Unimplemented method 'deleteOrder'");
     }
 
+    @Override
+    public void checkPermission(User user, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+        if (!order.getUser().getId().equals(user.getId()) && !user.getRoles().stream()
+                .anyMatch(role -> role.getRoleType().equals(RoleType.ROLE_ADMIN)
+                        || role.getRoleType().equals(RoleType.ROLE_SUPER_ADMIN))) {
+            throw new AccessDeniedException("You do not have permission to access this order");
+        }
+    }
 }
