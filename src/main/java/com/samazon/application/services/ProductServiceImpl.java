@@ -30,7 +30,6 @@ import com.samazon.application.models.User;
 import com.samazon.application.models.enums.RoleType;
 import com.samazon.application.repositories.CategoryRepository;
 import com.samazon.application.repositories.ProductRepository;
-import com.samazon.application.utils.AuthUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,17 +43,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final FileService fileService;
 
-    private final AuthUtil authUtil;
     private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
     @Override
-    public ProductResponse addProduct(ProductRequest request) {
+    public ProductResponse createProduct(User seller, ProductRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
-
-        User seller = authUtil.getCurrentUser();
 
         if (productRepository.existsByCategoryIdAndNameIgnoreCase(category.getId(), request.getName())) {
             throw new APIException("Product with name '" + request.getName() + "' already exists in category '"
@@ -77,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PagedResponse<ProductResponse> getProducts(Long categoryId, String keyword, Integer page, Integer size,
+    public PagedResponse<ProductResponse> getAllProducts(Long categoryId, String keyword, Integer page, Integer size,
             String sortBy, String sortOrder) {
         if (page < 0 || size <= 0) {
             throw new APIException("Invalid page or size parameters!");
@@ -121,7 +117,6 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse patchProduct(Long productId, ProductRequest request) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        checkModificationPermission(existingProduct);
 
         Long targetCategoryId = request.getCategoryId() != null
                 ? request.getCategoryId()
@@ -168,7 +163,6 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProduct(Long productId, ProductRequest request) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        checkModificationPermission(existingProduct);
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
         if (productRepository.existsByCategoryIdAndNameIgnoreCaseAndIdNot(category.getId(), request.getName(),
@@ -195,7 +189,6 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse updateProductImage(Long productId, MultipartFile image) throws IOException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        checkModificationPermission(product);
         if (image != null && !image.isEmpty()) {
             String imageUrl = fileService.uploadMedia(image);
             product.setImage(imageUrl);
@@ -211,7 +204,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id",
                         productId));
         List<Long> cartIds = new ArrayList<>();
-        checkModificationPermission(product);
 
         productRepository.delete(product);
         for (CartItem item : product.getCartItems()) {
@@ -225,19 +217,23 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
+    @Override
+    public Void checkModificationPermission(User user, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        if (product.getSeller().getId() != user.getId() &&
+                !user.getRoles().stream()
+                        .anyMatch(role -> role.getRoleType().equals(RoleType.ROLE_ADMIN)
+                                || role.getRoleType().equals(RoleType.ROLE_SUPER_ADMIN))) {
+            throw new AccessDeniedException("You don't have permission to modify this product!");
+        }
+        return null;
+    }
+
     private Double calculateSpecialPrice(Double price, Double discount) {
         if (discount == null || discount == 0) {
             return null;
         }
         return ((int) ((price - (price * (discount / 100))) * 100.0)) / 100.0;
-    }
-
-    private void checkModificationPermission(Product product) {
-        if (product.getSeller().getId() != authUtil.getCurrentUser().getId() &&
-                !authUtil.getCurrentUser().getRoles().stream()
-                        .anyMatch(role -> role.getRoleType().equals(RoleType.ROLE_ADMIN)
-                                || role.getRoleType().equals(RoleType.ROLE_SUPER_ADMIN))) {
-            throw new AccessDeniedException("You don't have permission to modify this product!");
-        }
     }
 }
