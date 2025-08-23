@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samazon.application.dto.common.APIResponse;
+import com.samazon.application.exceptions.APIException;
 import com.samazon.application.services.AccessControlService;
+import com.samazon.application.utils.AuthUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -20,14 +22,22 @@ public class AdminController {
 
     private final AccessControlService accessControlService;
 
+    private final AuthUtil authUtil;
+
     @PostMapping("/assign-admin/{userId}")
     public ResponseEntity<APIResponse> assignAdminRole(@PathVariable Long userId) {
+        if (authUtil.getCurrentUser().getId().equals(userId)) {
+            throw new APIException("Cannot assign admin role to yourself");
+        }
         accessControlService.assignAdminRole(userId);
         return ResponseEntity.ok(new APIResponse("Admin role assigned successfully", true));
     }
 
     @PostMapping("/revoke-admin/{userId}")
     public ResponseEntity<APIResponse> revokeAdminRole(@PathVariable Long userId) {
+        if (authUtil.getCurrentUser().getId().equals(userId)) {
+            throw new APIException("Cannot revoke admin role from yourself");
+        }
         accessControlService.revokeAdminRole(userId);
         return ResponseEntity.ok(new APIResponse("Admin role revoked successfully", true));
     }
