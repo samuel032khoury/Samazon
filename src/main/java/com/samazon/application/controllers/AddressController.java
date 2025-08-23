@@ -35,7 +35,7 @@ public class AddressController {
     public ResponseEntity<AddressResponse> createAddress(
             @Valid @RequestBody AddressRequest request) {
         User user = authUtil.getCurrentUser();
-        AddressResponse createdAddressResponse = addressService.createAddress(request, user);
+        AddressResponse createdAddressResponse = addressService.createAddress(user, request);
         return new ResponseEntity<>(createdAddressResponse, HttpStatus.CREATED);
     }
 
@@ -62,14 +62,16 @@ public class AddressController {
     public ResponseEntity<AddressResponse> updateAddress(@PathVariable Long addressId,
             @Valid @RequestBody AddressRequest request) {
         User user = authUtil.getCurrentUser();
-        AddressResponse updatedAddressResponse = addressService.updateAddress(addressId, request, user);
+        addressService.checkModificationPermission(user, addressId);
+        AddressResponse updatedAddressResponse = addressService.updateAddress(addressId, request);
         return new ResponseEntity<>(updatedAddressResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/user/addresses/{addressId}")
     public ResponseEntity<Void> deleteAddress(@PathVariable Long addressId) {
         User user = authUtil.getCurrentUser();
-        addressService.deleteAddress(addressId, user);
+        addressService.checkModificationPermission(user, addressId);
+        addressService.deleteAddress(addressId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

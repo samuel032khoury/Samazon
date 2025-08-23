@@ -11,7 +11,7 @@ import jakarta.transaction.Transactional;
 public interface AddressService {
 
     @Transactional
-    AddressResponse createAddress(AddressRequest request, User user);
+    AddressResponse createAddress(User user, AddressRequest request);
 
     List<AddressResponse> getAllAddresses();
 
@@ -19,8 +19,9 @@ public interface AddressService {
 
     AddressResponse getAddressById(Long addressId);
 
-    AddressResponse updateAddress(Long addressId, AddressRequest request, User user);
+    AddressResponse updateAddress(Long addressId, AddressRequest request);
 
-    Void deleteAddress(Long addressId, User user);
+    Void deleteAddress(Long addressId);
 
+    Void checkModificationPermission(User user, Long addressId);
 }

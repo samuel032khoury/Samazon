@@ -27,7 +27,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public AddressResponse createAddress(AddressRequest request, User user) {
+    public AddressResponse createAddress(User user, AddressRequest request) {
         if (user.getId() == null) {
             throw new APIException("User must be persisted before adding an address");
         }
@@ -76,15 +76,12 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressResponse updateAddress(Long addressId, AddressRequest request, User user) {
+    public AddressResponse updateAddress(Long addressId, AddressRequest request) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
-        if (!address.getUser().equals(user)) {
-            throw new AccessDeniedException("You do not have permission to update this address");
-        }
         if (addressRepository
                 .existsByUserIdAndAddressLine1AndAddressLine2AndCityAndStateAndPostalCodeAndCountryAndIdNot(
-                        user.getId(), request.getAddressLine1(),
+                        address.getUser().getId(), request.getAddressLine1(),
                         request.getAddressLine2(), request.getCity(), request.getState(), request.getPostalCode(),
                         request.getCountry(), addressId)) {
             throw new APIException("Address already exists for this user with the same details");
@@ -95,14 +92,20 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Void deleteAddress(Long addressId, User user) {
+    public Void deleteAddress(Long addressId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
-        if (!address.getUser().equals(user)) {
-            throw new AccessDeniedException("You do not have permission to delete this address");
-        }
         addressRepository.delete(address);
         return null;
     }
 
+    @Override
+    public Void checkModificationPermission(User user, Long addressId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
+        if (!address.getUser().equals(user)) {
+            throw new AccessDeniedException("You do not have permission to modify this address");
+        }
+        return null;
+    }
 }
