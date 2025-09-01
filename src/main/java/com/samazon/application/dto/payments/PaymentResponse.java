@@ -17,12 +17,11 @@ import lombok.NoArgsConstructor;
 public class PaymentResponse {
     private Long id;
     private Long orderId;
-    private PaymentStatus status;
     private Double amount;
-    private String currency;
-    private String providerPaymentId;
+    private PaymentStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
 
-    private Map<String, String> gatewayPayloads;
+    private String providerPaymentId;
+    private Map<String, String> providerPayloads;
 }
