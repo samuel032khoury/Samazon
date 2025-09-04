@@ -22,6 +22,15 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
+      
+      - name: Prepare source bundle
+        run: |
+          mkdir -p samazon
+          cp target/*.jar samazon/
+          cd samazon
+          zip -r ../samazon.zip .
+          cd ..
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
