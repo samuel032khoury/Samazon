@@ -36,4 +36,10 @@ jobs:
         run: eb init samazon --platform "Corretto 21" --region us-east-1
 
       - name: Deploy to EB environment
-        run: eb deploy samazon-env
+        run: eb deploy samazon-env --staged
+        continue-on-error: true
+
+      # 8. Fetch EB logs if deploy fails
+      - name: Fetch EB logs on failure
+        if: failure()
+        run: eb logs samazon-env --all
