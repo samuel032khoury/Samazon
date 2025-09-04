@@ -28,6 +28,9 @@ public class OpenApiConfig {
                                 .url("https://opensource.org/licenses/MIT")))
                 .addServersItem(new Server()
                         .url("http://localhost:8080")
-                        .description("Development server"));
+                        .description("Development server"))
+                .addServersItem(new Server()
+                        .url("http://samazon.us-east-1.elasticbeanstalk.com")
+                        .description("Production server"));
     }
 }

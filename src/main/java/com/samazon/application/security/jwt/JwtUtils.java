@@ -66,8 +66,9 @@ public class JwtUtils {
         log.info("Generated JWT: {}", jwt);
         return ResponseCookie.from(JWT_COOKIE_NAME, jwt)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/api")
+                .sameSite("None")
                 .maxAge(JWT_EXPIRATION_MS / 1000)
                 .build();
     }
