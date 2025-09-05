@@ -11,44 +11,34 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21 (Corretto)
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'corretto'
 
-      - name: Build with Maven
-        run: mvn clean package
-
-      
-      - name: Prepare source bundle
-        run: |
-          mkdir -p samazon
-          cp target/*.jar samazon/
-          cd samazon
-          zip -r ../samazon.zip .
-          cd ..
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+      - name: Cache Maven packages
+        uses: actions/cache@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Install EB CLI
-        run: pip install --upgrade awsebcli
-
-      - name: Initialize EB app
-        run: eb init samazon --platform "Corretto 21" --region us-east-1
-
-      - name: Deploy to EB environment
-        run: eb deploy samazon-env --staged
-        continue-on-error: true
-
-      # 8. Fetch EB logs if deploy fails
-      - name: Fetch EB logs on failure
-        if: failure()
-        run: eb logs samazon-env --all
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+          
+      - name: Build application
+        run: mvn clean package
+        
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*' 'target/classes/*' 'target/test-classes/*'
+      
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: samazon
+          environment_name: Samazon-env
+          version_label: ${{ github.sha }}
+          region: us-east-1
+          deployment_package: deploy.zip
